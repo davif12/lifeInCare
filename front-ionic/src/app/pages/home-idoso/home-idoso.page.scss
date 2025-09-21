@@ -1,0 +1,313 @@
+ion-content {
+  --background: linear-gradient(135deg, #000000, #121212);
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.08) 5%, transparent 15%),
+      radial-gradient(circle at 75% 75%, rgba(255, 215, 0, 0.08) 5%, transparent 15%);
+    z-index: 0;
+  }
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 24px 0 18px;
+  color: var(--ion-color-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-message {
+  background-color: rgba(30, 30, 30, 0.7);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  border-left: 4px solid var(--ion-color-primary);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  
+  h3 {
+    color: var(--ion-color-primary);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+  
+  p {
+    color: #ffffff;
+    opacity: 0.9;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+  }
+}
+
+.lembrete-item {
+  --border-radius: 12px;
+  margin-bottom: 12px;
+  --background: rgba(30, 30, 30, 0.7);
+  border-left: 3px solid var(--ion-color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  
+  h3 {
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--ion-color-primary);
+  }
+  
+  p {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+    opacity: 0.9;
+  }
+  
+  .lembrete-time {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    
+    ion-icon {
+      color: var(--ion-color-primary);
+      margin-right: 6px;
+    }
+    
+    span {
+      color: var(--ion-color-primary);
+      font-weight: 500;
+    }
+  }
+}
+
+.menu-card {
+  margin: 0;
+  height: 100%;
+  border-radius: 16px;
+  background: rgba(30, 30, 30, 0.7);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+  
+  ion-card-content {
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      font-size: 40px;
+      color: var(--ion-color-primary);
+      margin-bottom: 14px;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #ffffff;
+      text-align: center;
+    }
+  }
+}
+
+/* Estilos específicos para os módulos de saúde */
+.health-module {
+  border-top: 4px solid var(--ion-color-primary);
+  
+  &.reminders {
+    .module-icon {
+      color: #FFD700; /* Amarelo */
+    }
+  }
+  
+  &.medications {
+    .module-icon {
+      color: #FF9500; /* Laranja */
+    }
+  }
+  
+  &.appointments {
+    .module-icon {
+      color: #64D2FF; /* Azul claro */
+    }
+  }
+}
+
+/* Animações para tornar a interface mais responsiva */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard > * {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.menu-card {
+  animation: fadeIn 0.6s ease-out forwards;
+  
+  &:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  
+  &:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+}
+
+/* Estilos para os novos elementos */
+.summary-section {
+  margin-bottom: 20px;
+  
+  h2 {
+    color: var(--ion-color-primary);
+    margin-bottom: 16px;
+  }
+}
+
+.summary-card {
+  --background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-primary));
+  --color: white;
+  margin: 4px;
+  
+  ion-card-content {
+    padding: 16px;
+    
+    h3 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 0 8px 0;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+.next-dose-section {
+  margin-bottom: 20px;
+}
+
+.next-dose-card {
+  --background: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid var(--ion-color-warning);
+  
+  ion-card-content {
+    h3 {
+      color: var(--ion-color-warning-shade);
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+    
+    p {
+      margin: 4px 0;
+      color: #ffffff;
+      
+      &:first-of-type {
+        font-size: 1.1rem;
+      }
+      
+      &:last-of-type {
+        color: var(--ion-color-warning);
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.lembrete-item {
+  ion-label {
+    .instructions {
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+      font-style: italic;
+      margin-top: 4px;
+    }
+  }
+}
+
+// Estado vazio
+.ion-text-center {
+  ion-icon[size="large"] {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    color: var(--ion-color-medium);
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    
+    small {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+  }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 576px) {
+  h2 {
+    font-size: 1.6rem;
+  }
+  
+  .menu-card ion-card-content {
+    padding: 20px 12px;
+    
+    ion-icon {
+      font-size: 36px;
+    }
+    
+    p {
+      font-size: 1.1rem;
+    }
+  }
+  
+  .summary-card ion-card-content h3 {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,200 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Medicamentos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadData()" fill="clear">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Formulário de adicionar medicamento -->
+  <ion-card *ngIf="showAddForm">
+    <ion-card-header>
+      <ion-card-title>Novo Medicamento</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Nome do Medicamento *</ion-label>
+        <ion-input [(ngModel)]="newMedication.name" placeholder="Ex: Paracetamol"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Dosagem *</ion-label>
+        <ion-input [(ngModel)]="newMedication.dosage" placeholder="Ex: 500mg"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Frequência *</ion-label>
+        <ion-select [(ngModel)]="newMedication.frequency" placeholder="Selecione">
+          <ion-select-option value="8/8h">8 em 8 horas</ion-select-option>
+          <ion-select-option value="12/12h">12 em 12 horas</ion-select-option>
+          <ion-select-option value="24h">1 vez ao dia</ion-select-option>
+          <ion-select-option value="48h">A cada 2 dias</ion-select-option>
+          <ion-select-option value="semanal">Semanal</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Horários *</ion-label>
+        <ion-input [(ngModel)]="scheduleTime" type="time" placeholder="Selecione um horário"></ion-input>
+        <ion-button slot="end" fill="solid" color="primary" (click)="addSchedule()" [disabled]="!scheduleTime">
+          <ion-icon name="add"></ion-icon>
+          <ion-label>Adicionar</ion-label>
+        </ion-button>
+      </ion-item>
+      
+      <ion-note color="medium" *ngIf="scheduleTime && newMedication.schedules.length === 0">
+        Clique em "Adicionar" para incluir este horário na lista
+      </ion-note>
+
+      <div *ngIf="newMedication.schedules.length > 0" class="schedules-list">
+        <ion-chip *ngFor="let schedule of newMedication.schedules; let i = index" color="primary">
+          <ion-label>{{schedule}}</ion-label>
+          <ion-icon name="close-circle" (click)="removeSchedule(i)"></ion-icon>
+        </ion-chip>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Data de Início *</ion-label>
+        <ion-input [(ngModel)]="newMedication.startDate" type="date"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Data de Fim</ion-label>
+        <ion-input [(ngModel)]="newMedication.endDate" type="date"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Idoso *</ion-label>
+        <ion-select [(ngModel)]="newMedication.elderlyUserId" placeholder="Selecione o idoso">
+          <!-- Nova lista com UUIDs corretos -->
+          <ion-select-option *ngFor="let elderly of availableElderly" [value]="elderly.id">
+            {{elderly.name}} <span *ngIf="elderly.age">({{elderly.age}} anos)</span>
+          </ion-select-option>
+          
+          <!-- Fallback para lista antiga (se disponível) -->
+          <ng-container *ngIf="availableElderly.length === 0">
+            <ion-select-option *ngFor="let elderly of elderlies" [value]="elderly.userId">
+              {{elderly.user?.name || elderly.name}} (Sistema Antigo)
+            </ion-select-option>
+          </ng-container>
+        </ion-select>
+      </ion-item>
+      
+      <!-- Debug info -->
+      <ion-note color="medium" *ngIf="availableElderly.length > 0">
+        {{availableElderly.length}} idoso(s) disponível(is) para cadastro
+      </ion-note>
+      <ion-note color="warning" *ngIf="availableElderly.length === 0 && elderlies.length > 0">
+        Usando sistema antigo ({{elderlies.length}} idoso(s))
+      </ion-note>
+      <ion-note color="danger" *ngIf="availableElderly.length === 0 && elderlies.length === 0">
+        Nenhum idoso disponível. Verifique sua conexão.
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="stacked">Instruções Especiais</ion-label>
+        <ion-textarea [(ngModel)]="newMedication.instructions" placeholder="Ex: Tomar com alimentos"></ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Observações do Cuidador</ion-label>
+        <ion-textarea [(ngModel)]="newMedication.notes" placeholder="Observações adicionais"></ion-textarea>
+      </ion-item>
+
+      <ion-button expand="block" (click)="addMedication()" [disabled]="loading">
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        <span *ngIf="!loading">Adicionar Medicamento</span>
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" (click)="toggleAddForm()">
+        Cancelar
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de medicamentos -->
+  <div *ngIf="loading && !showAddForm" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Carregando medicamentos...</p>
+  </div>
+
+  <div *ngIf="!loading && medications.length === 0 && !showAddForm" class="empty-state">
+    <ion-icon name="medical" size="large"></ion-icon>
+    <h2>Nenhum medicamento cadastrado</h2>
+    <p>Adicione o primeiro medicamento clicando no botão flutuante</p>
+    <ion-button expand="block" (click)="toggleAddForm()" class="empty-state-button">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Cadastrar Primeiro Medicamento
+    </ion-button>
+  </div>
+
+  <ion-card *ngFor="let medication of medications" class="medication-card">
+    <ion-card-header>
+      <div class="card-header-content">
+        <div>
+          <ion-card-title>{{medication.name}}</ion-card-title>
+          <ion-card-subtitle>{{getElderlyName(medication.elderlyUserId)}}</ion-card-subtitle>
+        </div>
+        <ion-chip [color]="medication.isActive ? 'success' : 'medium'">
+          {{medication.isActive ? 'Ativo' : 'Inativo'}}
+        </ion-chip>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div class="medication-info">
+        <div class="info-row">
+          <ion-icon name="medical"></ion-icon>
+          <span><strong>Dosagem:</strong> {{medication.dosage}}</span>
+        </div>
+        <div class="info-row">
+          <ion-icon name="time"></ion-icon>
+          <span><strong>Frequência:</strong> {{medication.frequency}}</span>
+        </div>
+        <div class="info-row" *ngIf="medication.schedules && medication.schedules.length > 0">
+          <ion-icon name="alarm"></ion-icon>
+          <span><strong>Horários:</strong> {{medication.schedules.join(', ')}}</span>
+        </div>
+        <div class="info-row">
+          <ion-icon name="calendar"></ion-icon>
+          <span><strong>Início:</strong> {{medication.startDate | date:'dd/MM/yyyy'}}</span>
+        </div>
+        <div class="info-row" *ngIf="medication.endDate">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span><strong>Fim:</strong> {{medication.endDate | date:'dd/MM/yyyy'}}</span>
+        </div>
+        <div class="info-row" *ngIf="medication.instructions">
+          <ion-icon name="information-circle"></ion-icon>
+          <span><strong>Instruções:</strong> {{medication.instructions}}</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <ion-button fill="outline" size="small" (click)="toggleMedicationStatus(medication)">
+          <ion-icon name="{{medication.isActive ? 'pause' : 'play'}}" slot="start"></ion-icon>
+          {{medication.isActive ? 'Desativar' : 'Ativar'}}
+        </ion-button>
+        <ion-button fill="outline" size="small" color="danger" (click)="deleteMedication(medication)">
+          <ion-icon name="trash" slot="start"></ion-icon>
+          Excluir
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botão Flutuante para Adicionar Medicamento -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!showAddForm">
+    <ion-fab-button (click)="toggleAddForm()" color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

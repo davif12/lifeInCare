@@ -1,0 +1,126 @@
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  
+  ion-spinner {
+    margin-bottom: 1rem;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  
+  ion-icon {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  
+  h2 {
+    margin: 1rem 0 0.5rem 0;
+    color: var(--ion-color-medium);
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0 0 2rem 0;
+  }
+  
+  .empty-state-button {
+    margin-top: 1rem;
+    max-width: 300px;
+  }
+}
+
+.medication-card {
+  margin: 1rem;
+  
+  .card-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    
+    ion-card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    ion-card-subtitle {
+      color: var(--ion-color-medium);
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+.medication-info {
+  .info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    
+    ion-icon {
+      margin-right: 0.75rem;
+      color: var(--ion-color-primary);
+      min-width: 20px;
+    }
+    
+    span {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  
+  ion-button {
+    flex: 1;
+  }
+}
+
+.schedules-list {
+  padding: 0.5rem 0;
+  
+  ion-chip {
+    margin: 0.25rem;
+    
+    ion-icon {
+      cursor: pointer;
+      margin-left: 0.25rem;
+    }
+  }
+}
+
+ion-item {
+  margin-bottom: 1rem;
+}
+
+ion-card-content {
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    
+    ion-button {
+      width: 100%;
+    }
+  }
+  
+  .card-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

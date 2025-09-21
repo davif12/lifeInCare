@@ -1,0 +1,126 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home-idoso" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Saúde</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-segment [(ngModel)]="segmento" (ionChange)="mudarSegmento($event)" value="remedios">
+    <ion-segment-button value="remedios">
+      <ion-icon name="pill-outline"></ion-icon>
+      <ion-label>Remédios</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="consultas">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <ion-label>Consultas</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="lembretes">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <ion-label>Lembretes</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div class="ion-padding">
+    <!-- Remédios -->
+    <div *ngIf="segmento === 'remedios'">
+      <h2>Seus Medicamentos</h2>
+      
+      <!-- Debug Info (temporário) -->
+      <ion-card class="debug-card" style="background: rgba(0,100,0,0.1); border: 1px solid green; margin-bottom: 16px;">
+        <ion-card-content>
+          <h4>🔍 Status do Sistema</h4>
+          <p><strong>Carregando:</strong> {{loading ? 'Sim' : 'Não'}}</p>
+          <p><strong>Medicamentos:</strong> {{medicamentos.length}} encontrados</p>
+          <p><strong>Token Idoso:</strong> {{elderlyService.getElderlyToken() ? '✅ Existe' : '❌ Não existe'}}</p>
+          <ion-button size="small" color="primary" (click)="loadHealthData()">🔄 Recarregar</ion-button>
+          <ion-button size="small" color="secondary" (click)="debugTokens()">🔍 Debug Tokens</ion-button>
+        </ion-card-content>
+      </ion-card>
+      
+      <!-- Loading -->
+      <div *ngIf="loading" class="ion-text-center ion-padding">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Carregando medicamentos...</p>
+      </div>
+      
+      <!-- Medicamentos reais do backend -->
+      <div *ngIf="!loading && medicamentos.length > 0">
+        <ion-card *ngFor="let medicamento of medicamentos" class="medication-card">
+          <ion-card-header>
+            <div class="card-header-content">
+              <ion-card-title>{{medicamento.name}}</ion-card-title>
+              <ion-chip [color]="getStatusColor(medicamento.isActive)">
+                {{getStatusText(medicamento.isActive)}}
+              </ion-chip>
+            </div>
+          </ion-card-header>
+          
+          <ion-card-content>
+            <div class="medication-info">
+              <div class="info-row">
+                <ion-icon name="medical-outline"></ion-icon>
+                <span><strong>Dosagem:</strong> {{medicamento.dosage}}</span>
+              </div>
+              <div class="info-row">
+                <ion-icon name="time-outline"></ion-icon>
+                <span><strong>Frequência:</strong> {{medicamento.frequency}}</span>
+              </div>
+              <div class="info-row" *ngIf="medicamento.schedules && medicamento.schedules.length > 0">
+                <ion-icon name="alarm-outline"></ion-icon>
+                <span><strong>Horários:</strong> {{formatSchedules(medicamento.schedules)}}</span>
+              </div>
+              <div class="info-row" *ngIf="medicamento.instructions">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <span><strong>Instruções:</strong> {{medicamento.instructions}}</span>
+              </div>
+              <div class="info-row" *ngIf="medicamento.notes">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <span><strong>Observações:</strong> {{medicamento.notes}}</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+      
+      <!-- Mensagem quando não há medicamentos -->
+      <div *ngIf="!loading && medicamentos.length === 0" class="ion-text-center ion-padding">
+        <ion-icon name="medical-outline" size="large" color="medium"></ion-icon>
+        <h3>Nenhum medicamento encontrado</h3>
+        <p>Peça ao seu cuidador para cadastrar seus medicamentos.</p>
+      </div>
+    </div>
+
+    <!-- Consultas -->
+    <div *ngIf="segmento === 'consultas'">
+      <h2>Suas Consultas</h2>
+      <ion-list>
+        <ion-item *ngFor="let consulta of consultas" class="item-card">
+          <ion-icon name="heart-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>{{consulta.especialidade}}</h3>
+            <p>Data: {{consulta.data}} às {{consulta.horario}}</p>
+            <p>Local: {{consulta.local}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Lembretes -->
+    <div *ngIf="segmento === 'lembretes'">
+      <h2>Seus Lembretes</h2>
+      <ion-list>
+        <ion-item *ngFor="let lembrete of lembretes" class="item-card">
+          <ion-icon name="time-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>{{lembrete.titulo}}</h3>
+            <p>Horário: {{lembrete.horario}}</p>
+            <p>Recorrência: {{lembrete.recorrencia}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+</ion-content>

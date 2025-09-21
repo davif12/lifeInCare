@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Dashboard Cuidador</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="userData" class="welcome-card">
+    <h2>Bem-vindo(a), {{userData.name || 'Cuidador'}}</h2>
+    <p>Este é o seu painel de controle</p>
+  </div>
+
+  <ion-grid>
+    <!-- Primeira linha -->
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="menu-card" routerLink="/cuidador/lista-idosos">
+          <ion-card-content class="ion-text-center">
+            <ion-icon name="people-outline"></ion-icon>
+            <p>Meus Idosos</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="menu-card" routerLink="/cadastro-idoso">
+          <ion-card-content class="ion-text-center">
+            <ion-icon name="person-add-outline"></ion-icon>
+            <p>Cadastrar Idoso</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <!-- Segunda linha -->
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="menu-card" routerLink="/medicamentos">
+          <ion-card-content class="ion-text-center">
+            <ion-icon name="medicine-outline"></ion-icon>
+            <p>Medicamentos</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="menu-card" routerLink="/consultas">
+          <ion-card-content class="ion-text-center">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <p>Consultas</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <!-- Terceira linha -->
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="menu-card" routerLink="/lembretes">
+          <ion-card-content class="ion-text-center">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <p>Lembretes</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="placeholder-message">
+    <p>Esta é uma página de placeholder para testar o redirecionamento após o login</p>
+  </div>
+</ion-content>

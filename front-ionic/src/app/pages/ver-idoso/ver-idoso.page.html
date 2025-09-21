@@ -1,0 +1,102 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cuidador/lista-idosos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Visualização do Idoso{{ idoso ? ': ' + idoso.name : '' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="carregando" class="ion-text-center ion-padding">
+    <ion-loading isOpen="true" message="Carregando..."></ion-loading>
+  </div>
+
+  <div *ngIf="erro" class="erro-container ion-padding">
+    <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+    <p>{{ mensagemErro }}</p>
+    <ion-buttons class="ion-justify-content-center">
+      <ion-button (click)="obterDadosIdoso()" color="primary" size="small">
+        Tentar novamente
+      </ion-button>
+      <ion-button (click)="voltar()" color="medium" size="small">
+        Voltar
+      </ion-button>
+    </ion-buttons>
+  </div>
+
+  <!-- Aviso de visualização para o cuidador -->
+  <div class="preview-banner" *ngIf="idoso">
+    <ion-icon name="eye-outline"></ion-icon>
+    <span>Você está visualizando a interface do idoso</span>
+  </div>
+
+  <!-- Interface do idoso - similar à home-idoso -->
+  <div class="idoso-interface" *ngIf="idoso && !carregando && !erro">
+    <div class="idoso-header">
+      <h1>Olá, {{ idoso.name }}!</h1>
+      <ion-buttons>
+        <ion-button (click)="sair()">
+          <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
+
+    <div class="dashboard">
+      <h2>Seus lembretes de hoje</h2>
+      
+      <ion-list>
+        <ion-item *ngFor="let lembrete of lembretes" lines="full" class="lembrete-item">
+          <ion-icon name="time-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h3>{{lembrete.titulo}}</h3>
+            <p>{{lembrete.horario}}</p>
+          </ion-label>
+          <ion-button fill="clear" slot="end">
+            <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+      
+      <h2>Acesso rápido</h2>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-card class="menu-card">
+              <ion-card-content class="ion-text-center">
+                <ion-icon name="pulse-outline"></ion-icon>
+                <p>Saúde</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card class="menu-card">
+              <ion-card-content class="ion-text-center">
+                <ion-icon name="medicine-outline"></ion-icon>
+                <p>Medicamentos</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="6">
+            <ion-card class="menu-card">
+              <ion-card-content class="ion-text-center">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <p>Consultas</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card class="menu-card">
+              <ion-card-content class="ion-text-center">
+                <ion-icon name="notifications-outline"></ion-icon>
+                <p>Notificações</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+</ion-content>

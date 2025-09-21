@@ -1,0 +1,373 @@
+ion-content {
+  --background: linear-gradient(135deg, #000000, #121212);
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.05) 5%, transparent 15%),
+      radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.05) 5%, transparent 15%);
+    z-index: 0;
+  }
+}
+
+.saude-container {
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+ion-segment {
+  --background: rgba(30, 30, 30, 0.7);
+  padding: 8px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  
+  ion-segment-button {
+    --color: rgba(255, 255, 255, 0.7);
+    --color-checked: var(--ion-color-primary);
+    --indicator-color: var(--ion-color-primary);
+    --indicator-height: 4px;
+    --border-radius: 12px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    
+    &.segment-button-checked {
+      --background-checked: rgba(255, 215, 0, 0.1);
+    }
+    
+    ion-icon {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    
+    &.reminders-tab ion-icon {
+      color: #FFD700; /* Amarelo para lembretes */
+    }
+    
+    &.medications-tab ion-icon {
+      color: #FF9500; /* Laranja para medicamentos */
+    }
+    
+    &.appointments-tab ion-icon {
+      color: #64D2FF; /* Azul claro para consultas */
+    }
+  }
+}
+
+h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 24px 0 16px;
+  color: var(--ion-color-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.module-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  
+  ion-icon {
+    font-size: 2rem;
+    margin-right: 12px;
+    
+    &.reminder-icon {
+      color: #FFD700;
+    }
+    
+    &.medication-icon {
+      color: #FF9500;
+    }
+    
+    &.appointment-icon {
+      color: #64D2FF;
+    }
+  }
+}
+
+.item-card {
+  --border-radius: 12px;
+  margin-bottom: 16px;
+  --background: rgba(30, 30, 30, 0.7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border-left: 3px solid var(--ion-color-primary);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out forwards;
+  
+  &:nth-child(even) {
+    animation-delay: 0.1s;
+  }
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  h3 {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: var(--ion-color-primary);
+  }
+  
+  p {
+    color: #ffffff;
+    font-size: 0.95rem;
+    margin: 4px 0;
+    opacity: 0.9;
+    
+    ion-icon {
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+  }
+  
+  ion-icon {
+    font-size: 1.5rem;
+  }
+  
+  .item-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  
+  .action-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 0.8rem;
+    
+    &.primary {
+      --color: var(--ion-color-primary);
+    }
+    
+    &.danger {
+      --color: #ff6b6b;
+    }
+  }
+}
+
+/* Estilos específicos para cada tipo de módulo */
+.reminder-item {
+  border-left-color: #FFD700;
+  
+  .time-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: rgba(255, 215, 0, 0.15);
+    border-radius: 12px;
+    color: #FFD700;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  
+  .recurrence {
+    margin-top: 8px;
+    font-style: italic;
+  }
+}
+
+.medication-item {
+  border-left-color: #FF9500;
+  
+  .dosage-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: rgba(255, 149, 0, 0.15);
+    border-radius: 12px;
+    color: #FF9500;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  
+  .schedule-list {
+    margin-top: 8px;
+    
+    .schedule-time {
+      display: inline-block;
+      padding: 2px 8px;
+      background-color: rgba(255, 149, 0, 0.1);
+      border-radius: 8px;
+      margin-right: 8px;
+      margin-bottom: 4px;
+      
+      ion-icon {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.appointment-item {
+  border-left-color: #64D2FF;
+  
+  .specialty-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: rgba(100, 210, 255, 0.15);
+    border-radius: 12px;
+    color: #64D2FF;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  
+  .datetime {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    
+    ion-icon {
+      margin-right: 6px;
+      color: #64D2FF;
+      font-size: 1.1rem;
+    }
+  }
+  
+  .location {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    
+    ion-icon {
+      margin-right: 6px;
+      color: #64D2FF;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.empty-state {
+  padding: 32px 16px;
+  text-align: center;
+  background-color: rgba(30, 30, 30, 0.7);
+  border-radius: 16px;
+  margin: 20px 0;
+  
+  ion-icon {
+    font-size: 60px;
+    color: rgba(255, 215, 0, 0.5);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    color: var(--ion-color-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  p {
+    color: #ffffff;
+    opacity: 0.8;
+    margin-bottom: 20px;
+  }
+  
+  ion-button {
+    --background: var(--ion-color-primary);
+    --color: black;
+    font-weight: 600;
+  }
+}
+
+.fab-button {
+  --background: var(--ion-color-primary);
+  --color: black;
+  --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Estilos para cards de medicamentos */
+.medication-card {
+  --background: rgba(30, 30, 30, 0.8);
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border-left: 4px solid #FF9500;
+  animation: fadeIn 0.5s ease-out forwards;
+  
+  .card-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    ion-card-title {
+      color: var(--ion-color-primary);
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    
+    ion-chip {
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+  }
+  
+  .medication-info {
+    .info-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      
+      ion-icon {
+        font-size: 1.2rem;
+        margin-right: 8px;
+        color: #FF9500;
+        min-width: 20px;
+      }
+      
+      span {
+        color: #ffffff;
+        font-size: 0.95rem;
+        
+        strong {
+          color: var(--ion-color-primary);
+        }
+      }
+    }
+  }
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsividade */
+@media (max-width: 576px) {
+  ion-segment ion-segment-button {
+    font-size: 0.9rem;
+    
+    ion-icon {
+      font-size: 1.2rem;
+    }
+  }
+  
+  h2 {
+    font-size: 1.4rem;
+  }
+  
+  .item-card h3 {
+    font-size: 1.1rem;
+  }
+  
+  .medication-card {
+    .card-header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+}

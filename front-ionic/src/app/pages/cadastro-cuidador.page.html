@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login-cuidador" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cadastro de Cuidador</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="cadastro-container">
+    <h1>LifeCare</h1>
+    <p class="subtitle">Preencha os dados abaixo para se cadastrar</p>
+    
+    <form (ngSubmit)="registrar()" class="cadastro-form">
+      <ion-item class="form-item">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        <ion-label position="floating">Nome Completo</ion-label>
+        <ion-input 
+          [(ngModel)]="nome" 
+          name="nome" 
+          type="text" 
+          required
+          autocomplete="name">
+        </ion-input>
+      </ion-item>
+      
+      <ion-item class="form-item">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input 
+          [(ngModel)]="email" 
+          name="email" 
+          type="email" 
+          required
+          autocomplete="email">
+        </ion-input>
+      </ion-item>
+      
+      <ion-item class="form-item">
+        <ion-icon name="call-outline" slot="start"></ion-icon>
+        <ion-label position="floating">Telefone</ion-label>
+        <ion-input 
+          [(ngModel)]="telefone" 
+          name="telefone" 
+          type="tel" 
+          required
+          autocomplete="tel">
+        </ion-input>
+      </ion-item>
+      
+      <ion-item class="form-item">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-label position="floating">Senha</ion-label>
+        <ion-input 
+          [(ngModel)]="password" 
+          name="password" 
+          type="password" 
+          required
+          autocomplete="new-password">
+        </ion-input>
+      </ion-item>
+      
+      <ion-item class="form-item">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-label position="floating">Confirmar Senha</ion-label>
+        <ion-input 
+          [(ngModel)]="confirmPassword" 
+          name="confirmPassword" 
+          type="password" 
+          required
+          autocomplete="new-password">
+        </ion-input>
+      </ion-item>
+      
+      <ion-button 
+        expand="block" 
+        type="submit" 
+        class="cadastro-button"
+        [disabled]="isLoading">
+        <ion-icon name="person-add-outline" slot="start" *ngIf="!isLoading"></ion-icon>
+        {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
+      </ion-button>
+    </form>
+    
+    <p class="login-link">
+      Já tem uma conta? <a routerLink="/login-cuidador">Faça login</a>
+    </p>
+  </div>
+</ion-content>
