@@ -1,0 +1,32 @@
+﻿# Dependências
+node_modules/
+dist/
+build/
+
+# Ambiente
+.env
+*.local
+
+# IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Ionic
+.ionic/
+.sass-cache/
