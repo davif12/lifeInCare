@@ -1,0 +1,85 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Meus Medicamentos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="doRefresh($event)">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner></ion-spinner>
+    <p>Carregando medicamentos...</p>
+  </div>
+
+  <div *ngIf="!loading && medications.length === 0" class="empty-state">
+    <ion-icon name="medical" size="large"></ion-icon>
+    <h2>Nenhum medicamento encontrado</h2>
+    <p>Seu cuidador ainda não cadastrou medicamentos para você.</p>
+  </div>
+
+  <ion-list *ngIf="!loading && medications.length > 0">
+    <ion-card *ngFor="let medication of medications" class="medication-card">
+      <ion-card-header>
+        <div class="medication-header">
+          <ion-card-title>{{ medication.name }}</ion-card-title>
+          <ion-chip [color]="getStatusColor(medication.isActive)">
+            <ion-label>{{ getStatusText(medication.isActive) }}</ion-label>
+          </ion-chip>
+        </div>
+        <ion-card-subtitle>{{ medication.dosage }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="medication-info">
+          <div class="info-item">
+            <ion-icon name="time" color="primary"></ion-icon>
+            <div>
+              <strong>Frequência:</strong>
+              <p>{{ medication.frequency }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <ion-icon name="alarm" color="primary"></ion-icon>
+            <div>
+              <strong>Horários:</strong>
+              <p>{{ formatSchedules(medication.schedules) }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <ion-icon name="calendar" color="primary"></ion-icon>
+            <div>
+              <strong>Início:</strong>
+              <p>{{ formatDate(medication.startDate) }}</p>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="medication.endDate">
+            <ion-icon name="calendar-outline" color="primary"></ion-icon>
+            <div>
+              <strong>Fim:</strong>
+              <p>{{ formatDate(medication.endDate) }}</p>
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="medication.instructions">
+            <ion-icon name="document-text" color="primary"></ion-icon>
+            <div>
+              <strong>Instruções:</strong>
+              <p>{{ medication.instructions }}</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

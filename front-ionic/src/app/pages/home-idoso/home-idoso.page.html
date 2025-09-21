@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Olá, {{nome}}!</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="sair()">
+        <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="dashboard">
+    <!-- Resumo de Medicamentos -->
+    <div *ngIf="medicationSummary" class="summary-section">
+      <h2>Resumo dos seus medicamentos</h2>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="6">
+            <ion-card class="summary-card">
+              <ion-card-content class="ion-text-center">
+                <h3>{{medicationSummary.activeMedications}}</h3>
+                <p>Medicamentos Ativos</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card class="summary-card">
+              <ion-card-content class="ion-text-center">
+                <h3>{{medicationSummary.todayDoses}}</h3>
+                <p>Doses Hoje</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Próxima Dose -->
+    <div *ngIf="medicationSummary?.nextDose" class="next-dose-section">
+      <ion-card class="next-dose-card">
+        <ion-card-content>
+          <h3>Próxima dose</h3>
+          <p><strong>{{medicationSummary?.nextDose?.medicationName}}</strong></p>
+          <p>{{medicationSummary?.nextDose?.dosage}} às {{medicationSummary?.nextDose?.time}}</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <h2>Seus lembretes de hoje</h2>
+    
+    <!-- Estado de carregamento -->
+    <div *ngIf="loading" class="ion-text-center ion-padding">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Carregando seus medicamentos...</p>
+    </div>
+    
+    <!-- Lista de lembretes/medicamentos -->
+    <ion-list *ngIf="!loading">
+      <div *ngIf="lembretes.length === 0" class="ion-text-center ion-padding">
+        <ion-icon name="medicine-outline" size="large" color="medium"></ion-icon>
+        <p>Nenhum medicamento agendado para hoje</p>
+        <p><small>Seus medicamentos cadastrados pelo cuidador aparecerão aqui</small></p>
+      </div>
+      
+      <ion-item *ngFor="let lembrete of lembretes" lines="full" class="lembrete-item">
+        <ion-icon name="medicine-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>{{lembrete.titulo}}</h3>
+          <p>{{lembrete.horario}}</p>
+          <p *ngIf="lembrete.instructions" class="instructions">{{lembrete.instructions}}</p>
+        </ion-label>
+        <ion-button fill="clear" slot="end">
+          <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    
+    <h2>Acesso rápido</h2>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-card routerLink="/meus-medicamentos" class="menu-card">
+            <ion-card-content class="ion-text-center">
+              <ion-icon name="medicine-outline"></ion-icon>
+              <p>Meus Medicamentos</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card class="menu-card">
+            <ion-card-content class="ion-text-center">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <p>Consultas</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="6">
+          <ion-card class="menu-card">
+            <ion-card-content class="ion-text-center">
+              <ion-icon name="pulse-outline"></ion-icon>
+              <p>Saúde</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="6">
+          <ion-card class="menu-card">
+            <ion-card-content class="ion-text-center">
+              <ion-icon name="notifications-outline"></ion-icon>
+              <p>Notificações</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

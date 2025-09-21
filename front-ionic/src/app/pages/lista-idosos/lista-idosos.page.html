@@ -1,0 +1,90 @@
+<!-- Cabeçalho -->
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/cuidador/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Meus Idosos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="atualizarLista($event)">
+    <ion-refresher-content
+      pullingIcon="refresh-outline"
+      refreshingSpinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+  
+  <!-- Loading indicator -->
+  <div *ngIf="carregando" class="ion-text-center ion-padding">
+    <p>Carregando idosos...</p>
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+  
+  <!-- Mensagem de erro -->
+  <div *ngIf="erro && !carregando" class="erro-container">
+    <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+    <p>{{ mensagemErro }}</p>
+    <ion-button (click)="obterIdosos()" size="small" fill="clear">
+      Tentar novamente
+    </ion-button>
+  </div>
+  
+  <!-- Lista de idosos -->
+  <div *ngIf="!carregando">
+    <!-- Mensagem quando não há idosos -->
+    <div *ngIf="idosos.length === 0 && !erro" class="vazio-container ion-padding">
+      <ion-icon name="person-outline" color="medium" size="large"></ion-icon>
+      <h3>Nenhum idoso encontrado</h3>
+      <p>Você ainda não tem idosos cadastrados.</p>
+      <ion-button expand="block" (click)="cadastrarNovoIdoso()">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        Cadastrar Idoso
+      </ion-button>
+    </div>
+
+    <!-- Lista com idosos -->
+    <div *ngIf="idosos.length > 0">
+      <h3 class="lista-titulo ion-padding-horizontal">Lista de idosos sob seus cuidados</h3>
+      
+      <ion-list>
+        <ion-card *ngFor="let idoso of idosos" class="idoso-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="person-outline"></ion-icon>
+              {{ idoso.name || idoso.user?.name || 'Nome não informado' }}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p class="info-item" *ngIf="idoso.age">
+              <strong>Idade:</strong> {{ idoso.age }} anos
+            </p>
+            <p class="info-item" *ngIf="idoso.birthDate">
+              <strong>Nascimento:</strong> {{ idoso.birthDate | date:'dd/MM/yyyy' }}
+            </p>
+            <p class="info-item" *ngIf="idoso.medicalInfo">
+              <strong>Informações médicas:</strong> {{ idoso.medicalInfo }}
+            </p>
+            <p class="info-item" *ngIf="idoso.contactInfo">
+              <strong>Contato de emergência:</strong> {{ idoso.contactInfo }}
+            </p>
+            
+            <ion-button expand="block" (click)="visualizarIdoso(idoso.id)" class="view-button">
+              <ion-icon slot="start" name="eye-outline"></ion-icon>
+              Ver como Idoso
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-list>
+      
+      <div class="ion-padding">
+        <ion-button expand="block" (click)="cadastrarNovoIdoso()" fill="outline">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          Cadastrar Novo Idoso
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>
