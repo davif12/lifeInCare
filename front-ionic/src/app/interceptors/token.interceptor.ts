@@ -10,7 +10,7 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../auth.service';
 
 // Função interceptora para usar com withInterceptors
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
@@ -34,7 +34,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       // If we get a 401 Unauthorized response, the token might be expired or invalid
       if (error.status === 401) {
-        authService.logout();
+        authService.clearAuthData();
         router.navigate(['/login-cuidador']);
       }
       return throwError(() => error);

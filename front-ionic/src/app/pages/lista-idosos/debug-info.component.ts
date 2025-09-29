@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle } from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-debug-info',
@@ -37,7 +37,7 @@ import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle } from 
     </ion-card>
   `,
   standalone: true,
-  imports: [CommonModule, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle],
+  imports: [CommonModule, IonicModule],
 })
 export class DebugInfoComponent implements OnInit {
   token: string | null = null;

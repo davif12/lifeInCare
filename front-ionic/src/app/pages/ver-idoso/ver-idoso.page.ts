@@ -1,31 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButtons,
-  IonBackButton,
-  IonCard,
-  IonCardContent,
-  IonIcon,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonLoading,
-  IonLabel,
-  IonItem,
-  IonList,
-  IonButton
-} from '@ionic/angular/standalone';
-import { NgIf, NgFor } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { 
-  pulseOutline, 
   medkitOutline, 
   calendarOutline, 
-  notificationsOutline, 
   personOutline, 
   exitOutline, 
   timeOutline, 
@@ -41,25 +21,8 @@ import { ElderlyService } from '../../services/elderly.service';
   styleUrls: ['./ver-idoso.page.scss'],
   standalone: true,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButtons,
-    IonBackButton,
-    IonCard,
-    IonCardContent,
-    IonIcon,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonLoading,
-    IonLabel,
-    IonItem,
-    IonList,
-    IonButton,
-    NgIf,
-    NgFor
+    CommonModule,
+    IonicModule
   ]
 })
 export class VerIdosoPage implements OnInit {
@@ -81,10 +44,8 @@ export class VerIdosoPage implements OnInit {
     private elderlyService: ElderlyService
   ) {
     addIcons({
-      'pulse-outline': pulseOutline,
       'medicine-outline': medkitOutline,
       'calendar-outline': calendarOutline,
-      'notifications-outline': notificationsOutline,
       'person-outline': personOutline,
       'exit-outline': exitOutline,
       'time-outline': timeOutline,
@@ -126,6 +87,7 @@ export class VerIdosoPage implements OnInit {
   voltar() {
     this.router.navigate(['/cuidador/lista-idosos']);
   }
+
 
   sair() {
     // Apenas para simulação - não faz logout de verdade

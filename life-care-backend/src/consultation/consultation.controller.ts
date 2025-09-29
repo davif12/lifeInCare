@@ -20,6 +20,7 @@ import { CreateConsultationDto } from './dto/create-consultation.dto';
 import { UpdateConsultationDto } from './dto/update-consultation.dto';
 import { ConsultationStatus } from './consultation.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserRole } from '../users/entities/user.entity';
 
 @ApiTags('consultations')
 @Controller('consultations')
@@ -50,6 +51,24 @@ export class ConsultationController {
   findAllByCaregiver(@Request() req) {
     const caregiverId = req.user.sub;
     return this.consultationService.findAllByCaregiver(caregiverId);
+  }
+
+  @Get('my-consultations')
+  @ApiOperation({ summary: 'Listar minhas consultas (para idosos e cuidadores)' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Lista de consultas retornada com sucesso.' 
+  })
+  findMyConsultations(@Request() req) {
+    const userId = req.user.sub;
+    const userRole = req.user.role;
+
+    if (userRole === UserRole.PATIENT) {
+      return this.consultationService.findAllByElderlyUser(userId);
+    }
+
+    // Por padrão ou se for CAREGIVER, busca as do cuidador
+    return this.consultationService.findAllByCaregiver(userId);
   }
 
   @Get('upcoming')

@@ -1,19 +1,21 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { Component, OnInit, AfterViewInit, EnvironmentInjector } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [IonApp, IonRouterOutlet],
+  imports: [IonicModule],
   template: `
     <ion-app>
-      <ion-router-outlet></ion-router-outlet>
+      <ion-router-outlet [environmentInjector]="environmentInjector"></ion-router-outlet>
     </ion-app>
   `,
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit {
   title = 'front-ionic';
+  
+  constructor(public environmentInjector: EnvironmentInjector) {}
   
   ngOnInit() {}
   

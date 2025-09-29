@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../environment';
 
 export enum ConsultationType {
   ROUTINE = 'routine',
@@ -30,7 +31,10 @@ export interface Consultation {
   result?: string;
   prescriptions?: string;
   nextAppointment?: string;
-  patientId: string;
+  elderlyUserId: string;
+  caregiverUserId?: string;
+  elderlyUser?: any;
+  caregiverUser?: any;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -39,24 +43,16 @@ export interface Consultation {
   providedIn: 'root'
 })
 export class ConsultationService {
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,
     private authService: AuthService
   ) { }
 
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-  }
-
   // Criar nova consulta
   createConsultation(consultationData: Consultation): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/consultations`, consultationData, { headers: this.getHeaders() })
+    return this.http.post<any>(`${this.apiUrl}/consultations`, consultationData)
       .pipe(
         tap(response => console.log('Consulta criada:', response)),
         catchError(error => {
@@ -68,7 +64,7 @@ export class ConsultationService {
 
   // Obter todas as consultas do cuidador
   getAllConsultations(): Observable<Consultation[]> {
-    return this.http.get<Consultation[]>(`${this.apiUrl}/consultations`, { headers: this.getHeaders() })
+    return this.http.get<Consultation[]>(`${this.apiUrl}/consultations`)
       .pipe(
         tap(response => console.log('Consultas obtidas:', response)),
         catchError(error => {
@@ -78,9 +74,21 @@ export class ConsultationService {
       );
   }
 
+  // Obter minhas consultas (funciona para idoso e cuidador)
+  getMyConsultations(): Observable<Consultation[]> {
+    return this.http.get<Consultation[]>(`${this.apiUrl}/consultations/my-consultations`)
+      .pipe(
+        tap(response => console.log('Minhas consultas:', response)),
+        catchError(error => {
+          console.error('Erro ao obter minhas consultas:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
   // Obter consultas futuras
   getUpcomingConsultations(): Observable<Consultation[]> {
-    return this.http.get<Consultation[]>(`${this.apiUrl}/consultations/upcoming`, { headers: this.getHeaders() })
+    return this.http.get<Consultation[]>(`${this.apiUrl}/consultations/upcoming`)
       .pipe(
         tap(response => console.log('Consultas futuras:', response)),
         catchError(error => {
@@ -92,7 +100,7 @@ export class ConsultationService {
 
   // Obter consultas de um paciente específico
   getConsultationsByPatient(patientId: string): Observable<Consultation[]> {
-    return this.http.get<Consultation[]>(`${this.apiUrl}/consultations/patient/${patientId}`, { headers: this.getHeaders() })
+    return this.http.get<Consultation[]>(`${this.apiUrl}/consultations/patient/${patientId}`)
       .pipe(
         tap(response => console.log('Consultas do paciente:', response)),
         catchError(error => {
@@ -104,7 +112,7 @@ export class ConsultationService {
 
   // Obter uma consulta específica
   getConsultation(id: string): Observable<Consultation> {
-    return this.http.get<Consultation>(`${this.apiUrl}/consultations/${id}`, { headers: this.getHeaders() })
+    return this.http.get<Consultation>(`${this.apiUrl}/consultations/${id}`)
       .pipe(
         tap(response => console.log('Consulta específica:', response)),
         catchError(error => {
@@ -116,7 +124,7 @@ export class ConsultationService {
 
   // Atualizar consulta
   updateConsultation(id: string, consultationData: Partial<Consultation>): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/consultations/${id}`, consultationData, { headers: this.getHeaders() })
+    return this.http.patch<any>(`${this.apiUrl}/consultations/${id}`, consultationData)
       .pipe(
         tap(response => console.log('Consulta atualizada:', response)),
         catchError(error => {
@@ -128,7 +136,7 @@ export class ConsultationService {
 
   // Remover consulta
   deleteConsultation(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/consultations/${id}`, { headers: this.getHeaders() })
+    return this.http.delete<any>(`${this.apiUrl}/consultations/${id}`)
       .pipe(
         tap(response => console.log('Consulta removida:', response)),
         catchError(error => {
@@ -140,7 +148,7 @@ export class ConsultationService {
 
   // Atualizar status da consulta
   updateConsultationStatus(id: string, status: ConsultationStatus): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/consultations/${id}/status/${status}`, {}, { headers: this.getHeaders() })
+    return this.http.patch<any>(`${this.apiUrl}/consultations/${id}/status/${status}`, {})
       .pipe(
         tap(response => console.log('Status da consulta atualizado:', response)),
         catchError(error => {

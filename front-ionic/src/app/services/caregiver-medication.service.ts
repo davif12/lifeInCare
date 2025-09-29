@@ -62,7 +62,7 @@ export interface AvailableElderly {
   providedIn: 'root'
 })
 export class CaregiverMedicationService {
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = 'http://localhost:3006';
 
   constructor(
     private http: HttpClient,

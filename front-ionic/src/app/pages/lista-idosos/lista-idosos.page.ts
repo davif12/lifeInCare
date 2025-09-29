@@ -1,31 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonButton,
-  IonIcon,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonButtons,
-  IonBackButton,
-  IonSpinner,
-  IonRefresher,
-  IonRefresherContent
-} from '@ionic/angular/standalone';
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule, DatePipe } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { personOutline, eyeOutline, addOutline, refreshOutline, alertCircleOutline } from 'ionicons/icons';
+import { personOutline, eyeOutline, addOutline, refreshOutline, alertCircleOutline, medicalOutline } from 'ionicons/icons';
 import { ElderlyService } from '../../services/elderly.service';
 import { timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-lista-idosos',
@@ -34,24 +16,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonButton,
-    IonIcon,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonButtons,
-    IonBackButton,
-    IonSpinner,
-    IonRefresher,
-    IonRefresherContent,
-    NgIf,
-    NgFor,
+    IonicModule,
     DatePipe
   ]
 })
@@ -71,7 +36,8 @@ export class ListaIdososPage implements OnInit {
       'eye-outline': eyeOutline,
       'add-outline': addOutline,
       'refresh-outline': refreshOutline,
-      'alert-circle-outline': alertCircleOutline
+      'alert-circle-outline': alertCircleOutline,
+      'medical-outline': medicalOutline
     });
   }
 
@@ -217,16 +183,21 @@ export class ListaIdososPage implements OnInit {
   async showPinError(message: string = 'PIN inválido. Verifique o código e tente novamente.') {
     const { ToastController } = await import('@ionic/angular');
     const toastController = new ToastController();
-    
     const toast = await toastController.create({
       message,
       duration: 3000,
       color: 'danger',
       position: 'top'
     });
-    
     await toast.present();
   }
+
+  gerenciarConsultas(elderlyId: string) {
+    this.router.navigate(['/consultation-list'], { 
+      queryParams: { elderlyId: elderlyId } 
+    });
+  }
+
 
   cadastrarNovoIdoso() {
     this.router.navigate(['/cadastro-idoso']);

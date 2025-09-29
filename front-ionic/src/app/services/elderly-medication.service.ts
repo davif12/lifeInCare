@@ -4,7 +4,7 @@ import { Observable, tap, catchError, throwError } from 'rxjs';
 import { ElderlyService } from './elderly.service';
 
 export interface ElderlyMedication {
-  id?: string;
+  id: string;
   elderlyUserId: string;
   caregiverUserId: string;
   name: string;
@@ -59,7 +59,7 @@ export interface ElderlyDashboard {
   providedIn: 'root'
 })
 export class ElderlyMedicationService {
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = 'http://localhost:3006';
 
   constructor(
     private http: HttpClient,
@@ -174,10 +174,49 @@ export class ElderlyMedicationService {
   }
 
   /**
+   * Marcar medicamento como tomado
+   */
+  markAsTaken(medicationId: string): Observable<any> {
+    console.log('=== FRONTEND: Marcando medicamento como tomado ===');
+    console.log('ID do medicamento:', medicationId);
+    
+    return this.http.post(`${this.apiUrl}/elderly/medications/${medicationId}/taken`, {}, { 
+      headers: this.getHeaders() 
+    }).pipe(
+      tap(response => {
+        console.log('Medicamento marcado como tomado:', response);
+      }),
+      catchError(error => {
+        console.error('Erro ao marcar medicamento como tomado:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Verificar se o idoso está autenticado
    */
   isAuthenticated(): boolean {
     return this.elderlyService.isElderlyLoggedIn();
+  }
+
+  /**
+   * DEBUG - Endpoint especial para diagnóstico
+   */
+  getDebugMedications(): Observable<any> {
+    console.log('=== FRONTEND: Chamando endpoint de DEBUG ===');
+    
+    return this.http.get<any>(`${this.apiUrl}/elderly/medications/debug-medications`, { 
+      headers: this.getHeaders() 
+    }).pipe(
+      tap(response => {
+        console.log('🔧 DEBUG RESPONSE:', response);
+      }),
+      catchError(error => {
+        console.error('❌ Erro no DEBUG:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**

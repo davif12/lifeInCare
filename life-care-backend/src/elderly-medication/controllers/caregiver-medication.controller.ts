@@ -270,6 +270,7 @@ export class CaregiverMedicationController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ 
     summary: 'Remover medicamento',
     description: 'Remove permanentemente um medicamento'

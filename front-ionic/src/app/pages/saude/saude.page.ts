@@ -1,25 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
-  IonToolbar, 
-  IonIcon,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonBackButton,
-  IonButtons,
-  IonSegment,
-  IonSegmentButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonChip,
-  IonSpinner,
-  IonButton
-} from '@ionic/angular/standalone';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -39,7 +19,6 @@ import {
 import { ElderlyMedicationService, ElderlyMedication } from '../../services/elderly-medication.service';
 import { ElderlyService } from '../../services/elderly.service';
 import { firstValueFrom } from 'rxjs';
-import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-saude',
@@ -49,25 +28,7 @@ import { ToastController } from '@ionic/angular';
   imports: [
     CommonModule,
     FormsModule,
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonIcon,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonBackButton,
-    IonButtons,
-    IonSegment,
-    IonSegmentButton,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonChip,
-    IonSpinner,
-    IonButton
+    IonicModule
   ],
   providers: [ElderlyMedicationService]
 })
@@ -98,8 +59,8 @@ export class SaudePage implements OnInit {
 
   constructor(
     private elderlyMedicationService: ElderlyMedicationService,
-    private toastController: ToastController,
-    public elderlyService: ElderlyService
+    public elderlyService: ElderlyService,
+    private toastController: ToastController
   ) {
     addIcons({
       'medicine-outline': medkitOutline,
@@ -138,11 +99,11 @@ export class SaudePage implements OnInit {
         return;
       }
       
-      // Carregar medicamentos reais do backend
-      console.log('Chamando elderlyMedicationService.getMyMedications()...');
+      // Carregar medicamentos reais do backend via endpoint específico para idosos
+      console.log('🔄 Carregando medicamentos via /elderly/medications/my-medications...');
       this.medicamentos = await firstValueFrom(this.elderlyMedicationService.getMyMedications());
-      console.log('Medicamentos carregados:', this.medicamentos.length);
-      console.log('Dados dos medicamentos:', this.medicamentos);
+      console.log('✅ Medicamentos carregados:', this.medicamentos.length);
+      console.log('📋 Dados dos medicamentos:', this.medicamentos);
       
       if (this.medicamentos.length === 0) {
         console.log('Nenhum medicamento encontrado');
@@ -176,16 +137,19 @@ export class SaudePage implements OnInit {
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
-      message,
-      duration: 3000,
-      color,
+      message: message,
+      duration: 2000,
+      color: color,
       position: 'top'
     });
     toast.present();
   }
 
-  formatSchedules(schedules: string[] | undefined): string {
-    return schedules ? schedules.join(', ') : 'Não definido';
+  formatSchedules(schedules: string[]): string {
+    if (!schedules || schedules.length === 0) {
+      return 'Não definido';
+    }
+    return schedules.join(', ');
   }
 
   getStatusColor(isActive: boolean | undefined): string {
@@ -210,6 +174,9 @@ export class SaudePage implements OnInit {
     console.log('ElderlyService methods:');
     console.log('- getElderlyToken():', this.elderlyService.getElderlyToken());
     console.log('- isElderlyLoggedIn():', this.elderlyService.isElderlyLoggedIn());
+    
+    console.log('Medicamentos atuais:', this.medicamentos);
+    console.log('Primeiro medicamento:', this.medicamentos[0]);
     
     if (!elderlyToken && !authToken) {
       this.showToast('❌ Nenhum token encontrado! Faça login primeiro.', 'danger');

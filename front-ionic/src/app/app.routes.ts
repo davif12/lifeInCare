@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { elderlyGuard } from './guards/elderly.guard';
 
 export const routes: Routes = [
   {
@@ -25,10 +26,12 @@ export const routes: Routes = [
   },
   {
     path: 'home-idoso',
+    canActivate: [elderlyGuard],
     loadChildren: () => import('./pages/home-idoso/home-idoso.routes').then(m => m.routes)
   },
   {
     path: 'saude',
+    canActivate: [elderlyGuard],
     loadChildren: () => import('./pages/saude/saude.routes').then(m => m.routes)
   },
   {
@@ -52,6 +55,11 @@ export const routes: Routes = [
     loadChildren: () => import('./pages/ver-idoso/ver-idoso.routes').then(m => m.routes)
   },
   {
+    path: 'cuidador/cadastro-medicamento/:elderlyId',
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/cadastro-medicamento/cadastro-medicamento.routes').then(m => m.routes)
+  },
+  {
     path: 'medicamentos',
     loadComponent: () => import('./pages/medicamentos/medicamentos.page').then(m => m.MedicamentosPage),
     canActivate: [authGuard]
@@ -59,7 +67,26 @@ export const routes: Routes = [
   {
     path: 'meus-medicamentos',
     loadComponent: () => import('./pages/meus-medicamentos/meus-medicamentos.page').then(m => m.MeusMedicamentosPage),
+    canActivate: [elderlyGuard]
+  },
+  {
+    path: 'consultation-list',
+    loadComponent: () => import('./pages/consultation-list/consultation-list.page').then(m => m.ConsultationListPage),
     canActivate: [authGuard]
+  },
+  {
+    path: 'consultation-form',
+    loadComponent: () => import('./pages/consultation-form/consultation-form.page').then(m => m.ConsultationFormPage),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'my-consultations',
+    loadComponent: () => import('./pages/my-consultations/my-consultations.page').then(m => m.MyConsultationsPage),
+    canActivate: [elderlyGuard]
+  },
+  {
+    path: 'consultas',
+    redirectTo: 'cuidador/lista-idosos'
   },
   {
     path: '**',

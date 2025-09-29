@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ElderlyService {
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

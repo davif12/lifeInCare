@@ -1,25 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { 
-  IonButton, 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
-  IonToolbar, 
-  IonCard,
-  IonCardContent,
-  IonIcon,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonButtons,
-  IonSpinner,
-  IonRefresher,
-  IonRefresherContent
-} from '@ionic/angular/standalone';
+import { IonicModule, LoadingController, AlertController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -27,14 +8,19 @@ import {
   medkitOutline, 
   calendarOutline, 
   alertOutline, 
-  pulseOutline,
-  notificationsOutline,
   timeOutline,
   exitOutline,
-  checkmarkCircleOutline
+  checkmarkCircleOutline,
+  refreshOutline,
+  calendarClearOutline,
+  personOutline,
+  documentTextOutline,
+  locationOutline,
+  medicalOutline
 } from 'ionicons/icons';
 import { ElderlyService } from '../../services/elderly.service';
 import { ElderlyMedicationService, TodaySchedule, MedicationSummary } from '../../services/elderly-medication.service';
+import { IntegratedReminderService, IntegratedReminder } from '../../services/integrated-reminder.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -45,27 +31,10 @@ import { firstValueFrom } from 'rxjs';
   imports: [
     CommonModule,
     FormsModule,
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonButton,
-    IonCard,
-    IonCardContent,
-    IonIcon,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonButtons,
-    IonSpinner,
-    IonRefresher,
-    IonRefresherContent,
+    IonicModule,
     RouterLink
   ],
-  providers: [ElderlyMedicationService]
+  providers: [ElderlyMedicationService, IntegratedReminderService]
 })
 export class HomeIdosoPage implements OnInit {
   nome: string = '';
@@ -76,28 +45,36 @@ export class HomeIdosoPage implements OnInit {
   todaySchedule: TodaySchedule[] = [];
   medicationSummary: MedicationSummary | null = null;
   
-  // Dados estáticos como fallback (removidos os hardcoded)
+  // Lembretes integrados (medicamentos + lembretes + consultas)
   lembretes: any[] = [];
+  integratedReminders: IntegratedReminder[] = [];
 
   constructor(
     private elderlyService: ElderlyService,
-    private elderlyMedicationService: ElderlyMedicationService
+    private elderlyMedicationService: ElderlyMedicationService,
+    private integratedReminderService: IntegratedReminderService,
+    private toastController: ToastController
   ) {
     addIcons({
       'medicine-outline': medkitOutline,
       'calendar-outline': calendarOutline,
       'alert-outline': alertOutline,
-      'pulse-outline': pulseOutline,
-      'notifications-outline': notificationsOutline,
       'time-outline': timeOutline,
       'exit-outline': exitOutline,
-      'checkmark-circle-outline': checkmarkCircleOutline
+      'checkmark-circle-outline': checkmarkCircleOutline,
+      'refresh-outline': refreshOutline,
+      'calendar-clear-outline': calendarClearOutline,
+      'person-outline': personOutline,
+      'document-text-outline': documentTextOutline,
+      'location-outline': locationOutline,
+      'medical-outline': medicalOutline
     });
   }
 
   ngOnInit() {
     this.loadElderlyData();
     this.loadMedicationData();
+    // loadIntegratedReminders será chamado após loadElderlyData
   }
 
   loadElderlyData() {
@@ -114,6 +91,9 @@ export class HomeIdosoPage implements OnInit {
           name: tokenPayload.username,
           role: tokenPayload.role
         };
+        
+        // Carregar lembretes integrados após ter os dados do usuário
+        this.loadIntegratedReminders();
       } catch (error) {
         console.error('Erro ao decodificar token:', error);
         this.nome = 'Idoso';
@@ -166,9 +146,98 @@ export class HomeIdosoPage implements OnInit {
     }
   }
 
+  async loadIntegratedReminders() {
+    if (!this.userData?.id) {
+      console.log('ID do usuário não disponível para carregar lembretes');
+      return;
+    }
+
+    try {
+      console.log('=== HOME-IDOSO: Carregando lembretes integrados ===');
+      
+      this.integratedReminderService.getIntegratedReminders(this.userData.id).subscribe({
+        next: (reminders) => {
+          this.integratedReminders = reminders;
+          console.log('Lembretes integrados carregados:', reminders.length);
+        },
+        error: (error) => {
+          console.error('Erro ao carregar lembretes integrados:', error);
+          this.integratedReminders = [];
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao carregar lembretes integrados:', error);
+      this.integratedReminders = [];
+    }
+  }
+
   async doRefresh(event: any) {
-    await this.loadMedicationData();
+    await Promise.all([
+      this.loadMedicationData(),
+      this.loadIntegratedReminders()
+    ]);
     event.target.complete();
+  }
+
+  // Adicionar método para marcar medicamentos (lista antiga)
+  async markMedicationAsCompleted(medication: any) {
+    // Adiciona a propriedade para iniciar a animação
+    medication.completing = true;
+
+    // Aguarda a animação antes de remover da lista
+    setTimeout(() => {
+      this.lembretes = this.lembretes.filter(item => item !== medication);
+      this.presentToast(`"${medication.titulo}" concluído!`, 'success');
+    }, 500); // Tempo da animação
+
+    // TODO: Implementar a chamada de API para marcar o medicamento como concluído no backend
+  }
+
+  // Método para marcar lembretes integrados como concluídos
+  async markAsCompleted(reminder: any) {
+    if (!reminder.actionable) return;
+
+    const originalReminders = [...this.integratedReminders];
+    
+    // Animação e remoção otimista
+    reminder.completing = true;
+    setTimeout(() => {
+      this.integratedReminders = this.integratedReminders.filter(item => item.id !== reminder.id);
+    }, 500);
+
+    try {
+      await firstValueFrom(this.integratedReminderService.markAsCompleted(reminder));
+      this.presentToast(`"${reminder.title}" concluído!`, 'success');
+    } catch (error) {
+      console.error('Erro ao marcar como concluído, revertendo:', error);
+      // Reverte a UI em caso de erro
+      this.integratedReminders = originalReminders;
+      this.presentToast('Falha ao concluir. Tente novamente.', 'danger');
+    }
+  }
+
+  // Adicionar método auxiliar para exibir Toasts
+  async presentToast(message: string, color: 'success' | 'danger') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color: color,
+      position: 'top'
+    });
+    toast.present();
+  }
+
+  // Métodos auxiliares para o template
+  getFormattedDateTime(date: Date): string {
+    return this.integratedReminderService.formatDateTime(date);
+  }
+
+  getIconForType(type: string): string {
+    return this.integratedReminderService.getIconForType(type);
+  }
+
+  getColorForUrgency(date: Date): string {
+    return this.integratedReminderService.getColorForUrgency(date);
   }
 
   sair() {

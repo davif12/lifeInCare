@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { environment } from '../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = environment.apiUrl;
   private tokenKey = 'auth_token';
   private userKey = 'auth_user';
   private savedEmailsKey = 'saved_emails';

@@ -74,7 +74,7 @@ async function bootstrap() {
     return res.sendFile(join(__dirname, '..', 'public', 'index.html'));
   });
 
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3006;
   await app.listen(port);
   console.log(`🚀 Application is running on: http://localhost:${port}`);
 }

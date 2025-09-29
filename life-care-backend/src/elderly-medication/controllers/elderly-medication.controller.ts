@@ -19,8 +19,8 @@ import { Medication } from '../entities/elderly-medication.entity';
 @Controller('elderly/medications')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
-export class MedicationController {
-  private readonly logger = new Logger(MedicationController.name);
+export class ElderlyMedicationController {
+  private readonly logger = new Logger(ElderlyMedicationController.name);
 
   constructor(private readonly elderlyMedicationService: ElderlyMedicationService) {}
 
@@ -167,6 +167,59 @@ export class MedicationController {
 
     this.logger.log(`Resumo gerado: ${JSON.stringify(summary)}`);
     return summary;
+  }
+
+  @Get('debug-medications')
+  @ApiOperation({ 
+    summary: 'DEBUG - Buscar medicamentos com logs detalhados',
+    description: 'Endpoint especial para debug que força a busca de medicamentos'
+  })
+  async debugMedications(@Request() req): Promise<{
+    userInfo: any;
+    searchResults: any;
+    allMedicationsInDatabase: any;
+    forcedSearch: Medication[];
+  }> {
+    this.logger.log('=== 🔧 DEBUG ENDPOINT ATIVADO ===');
+    
+    const elderlyUserId = req.user.sub || req.user.userId;
+    
+    // 1. Informações do usuário
+    const userInfo = {
+      fullUser: req.user,
+      elderlyUserId: elderlyUserId,
+      username: req.user.username,
+      role: req.user.role,
+    };
+    this.logger.log(`👤 USER INFO: ${JSON.stringify(userInfo)}`);
+
+    // 2. Busca normal
+    const normalSearch = await this.elderlyMedicationService.findByElderlyUserId(elderlyUserId);
+    this.logger.log(`🔍 BUSCA NORMAL: ${normalSearch.length} medicamentos`);
+
+    // 3. Buscar TODOS os medicamentos no banco
+    const allMedications = await this.elderlyMedicationService.findAllMedicationsForDebug();
+    this.logger.log(`📊 TOTAL NO BANCO: ${allMedications.length} medicamentos`);
+
+    // 4. Busca forçada com o ID exato do banco
+    const forcedSearch = await this.elderlyMedicationService.findByElderlyUserIdForced('e8d93e10-6244-4275-8a2e-9efc');
+    this.logger.log(`💪 BUSCA FORÇADA: ${forcedSearch.length} medicamentos`);
+
+    const result = {
+      userInfo,
+      searchResults: {
+        normalSearchCount: normalSearch.length,
+        normalSearchData: normalSearch,
+      },
+      allMedicationsInDatabase: {
+        totalCount: allMedications.length,
+        allData: allMedications,
+      },
+      forcedSearch: forcedSearch,
+    };
+
+    this.logger.log('=== 🎯 DEBUG COMPLETO ===');
+    return result;
   }
 
   @Get('dashboard')

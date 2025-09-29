@@ -1,0 +1,315 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ pageTitle }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-container">
+      <!-- Grupo 1: Informações Essenciais -->
+      <div class="form-group">
+        <h3 class="group-title">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          Informações Essenciais
+        </h3>
+        
+        <ion-item>
+          <ion-select 
+            formControlName="type" 
+            label="Tipo da Consulta" 
+            label-placement="floating"
+            interface="popover">
+            <ion-select-option 
+              *ngFor="let type of consultationTypes" 
+              [value]="type.value">
+              {{ type.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        <div *ngIf="isFieldInvalid('type')" class="error-message">
+          {{ getFieldError('type') }}
+        </div>
+
+
+        <ion-item>
+          <ion-input 
+            formControlName="specialty" 
+            label="Especialidade" 
+            label-placement="floating"
+            type="text"
+            placeholder="Ex: Cardiologia, Neurologia..."
+            maxlength="50"
+            [class.ion-invalid]="isFieldInvalid('specialty')"
+            [class.ion-touched]="form.get('specialty')?.touched">
+          </ion-input>
+        </ion-item>
+        <div *ngIf="isFieldInvalid('specialty')" class="error-message">
+          {{ getFieldError('specialty') }}
+        </div>
+
+        <ion-item>
+          <ion-input 
+            formControlName="doctorName" 
+            label="Nome do Médico" 
+            label-placement="floating"
+            type="text"
+            placeholder="Dr(a). Nome do médico"
+            maxlength="100"
+            [class.ion-invalid]="isFieldInvalid('doctorName')"
+            [class.ion-touched]="form.get('doctorName')?.touched">
+          </ion-input>
+        </ion-item>
+        <div *ngIf="isFieldInvalid('doctorName')" class="error-message">
+          {{ getFieldError('doctorName') }}
+        </div>
+      </div>
+
+      <!-- Grupo 2: Agendamento -->
+      <div class="form-group">
+        <h3 class="group-title">
+          <ion-icon name="calendar-outline"></ion-icon>
+          Agendamento
+        </h3>
+        
+        <ion-item>
+          <ion-label position="stacked">Data e Hora da Consulta</ion-label>
+          <ion-datetime-button datetime="datetime" class="datetime-button"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime 
+                id="datetime" 
+                formControlName="scheduledDateTime"
+                presentation="date-time"
+                [min]="minDateTime"
+                [showDefaultButtons]="true"
+                locale="pt-BR">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+        <div *ngIf="isFieldInvalid('scheduledDateTime')" class="error-message">
+          {{ getFieldError('scheduledDateTime') }}
+        </div>
+        
+        <!-- Preview da data/hora selecionada -->
+        <div *ngIf="form.get('scheduledDateTime')?.value" class="datetime-preview">
+          <ion-chip color="primary">
+            <ion-icon name="time-outline"></ion-icon>
+            <ion-label>{{ getFormattedDateTime() }}</ion-label>
+          </ion-chip>
+        </div>
+      </div>
+
+      <!-- Grupo 3: Detalhes -->
+      <div class="form-group">
+        <h3 class="group-title">
+          <ion-icon name="location-outline"></ion-icon>
+          Detalhes da Consulta
+        </h3>
+        
+        <ion-item>
+          <ion-input 
+            formControlName="location" 
+            label="Local da Consulta" 
+            label-placement="floating"
+            type="text"
+            placeholder="Hospital, clínica, consultório..."
+            maxlength="100"
+            [class.ion-invalid]="isFieldInvalid('location')"
+            [class.ion-touched]="form.get('location')?.touched">
+          </ion-input>
+        </ion-item>
+        <div *ngIf="isFieldInvalid('location')" class="error-message">
+          {{ getFieldError('location') }}
+        </div>
+
+        <ion-item>
+          <ion-textarea 
+            formControlName="reason" 
+            label="Motivo da Consulta" 
+            label-placement="floating"
+            rows="3"
+            maxlength="500"
+            placeholder="Descreva o motivo da consulta..."
+            [class.ion-invalid]="isFieldInvalid('reason')"
+            [class.ion-touched]="form.get('reason')?.touched">
+          </ion-textarea>
+        </ion-item>
+        <div class="character-counter">
+          {{ form.get('reason')?.value?.length || 0 }}/500 caracteres
+        </div>
+        <div *ngIf="isFieldInvalid('reason')" class="error-message">
+          {{ getFieldError('reason') }}
+        </div>
+      </div>
+
+      <!-- Grupo 4: Opções Adicionais -->
+      <div class="form-group">
+        <h3 class="group-title">
+          <ion-icon name="settings-outline"></ion-icon>
+          Opções Adicionais
+        </h3>
+        
+        <ion-item>
+          <ion-checkbox formControlName="enableReminder"></ion-checkbox>
+          <ion-label class="ion-margin-start">Ativar lembrete</ion-label>
+        </ion-item>
+        
+        <ion-item *ngIf="form.get('enableReminder')?.value">
+          <ion-select 
+            formControlName="reminderTime" 
+            label="Lembrar com antecedência" 
+            label-placement="floating"
+            interface="popover">
+            <ion-select-option value="10">10 minutos</ion-select-option>
+            <ion-select-option value="30">30 minutos</ion-select-option>
+            <ion-select-option value="60">1 hora</ion-select-option>
+            <ion-select-option value="1440">1 dia</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-textarea 
+            formControlName="notes" 
+            label="Observações" 
+            label-placement="floating"
+            rows="2"
+            maxlength="300"
+            placeholder="Observações adicionais...">
+          </ion-textarea>
+        </ion-item>
+        <div class="character-counter">
+          {{ form.get('notes')?.value?.length || 0 }}/300 caracteres
+        </div>
+      </div>
+
+      <!-- Campos de edição (apenas no modo edição) -->
+      <div *ngIf="isEditMode" class="form-group">
+        <h3 class="group-title">
+          <ion-icon name="document-text-outline"></ion-icon>
+          Informações da Consulta
+        </h3>
+        
+        <ion-item>
+          <ion-select 
+            formControlName="status" 
+            label="Status" 
+            label-placement="floating"
+            interface="popover">
+            <ion-select-option 
+              *ngFor="let status of consultationStatuses" 
+              [value]="status.value">
+              {{ status.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-textarea 
+            formControlName="result" 
+            label="Resultado/Diagnóstico" 
+            label-placement="floating"
+            rows="3"
+            maxlength="1000"
+            placeholder="Resultado da consulta...">
+          </ion-textarea>
+        </ion-item>
+        <div class="character-counter">
+          {{ form.get('result')?.value?.length || 0 }}/1000 caracteres
+        </div>
+
+        <ion-item>
+          <ion-textarea 
+            formControlName="prescriptions" 
+            label="Prescrições e Recomendações" 
+            label-placement="floating"
+            rows="3"
+            maxlength="1000"
+            placeholder="Descreva as prescrições médicas e recomendações gerais...">
+          </ion-textarea>
+        </ion-item>
+        <div class="character-counter">
+          {{ form.get('prescriptions')?.value?.length || 0 }}/1000 caracteres
+        </div>
+        <ion-note class="ion-margin-start">
+          <ion-icon name="information-circle-outline" size="small"></ion-icon>
+          Para cadastrar medicamentos específicos, use a aba "Medicamentos"
+        </ion-note>
+
+        <ion-item>
+          <ion-label position="stacked">Próxima Consulta</ion-label>
+          <ion-datetime-button datetime="nextAppointment"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime 
+                id="nextAppointment" 
+                formControlName="nextAppointment"
+                presentation="date"
+                [min]="minDateTime"
+                [showDefaultButtons]="true"
+                locale="pt-BR">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+      </div>
+
+      <!-- Espaçamento para botões fixos -->
+      <div class="bottom-spacing"></div>
+    </div>
+  </form>
+
+  <!-- Resumo da consulta (se preenchido) -->
+  <div *ngIf="showSummary()" class="consultation-summary">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="eye-outline"></ion-icon>
+          Resumo da Consulta
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="summary-item">
+          <strong>{{ form.get('specialty')?.value }}</strong>
+          <span>com {{ form.get('doctorName')?.value }}</span>
+        </div>
+        <div class="summary-item" *ngIf="form.get('scheduledDateTime')?.value">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ getFormattedDateTime() }}
+        </div>
+        <div class="summary-item" *ngIf="form.get('location')?.value">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ form.get('location')?.value }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Botões fixos no rodapé -->
+  <div class="sticky-footer">
+    <ion-button 
+      expand="block" 
+      (click)="goBack()"
+      fill="outline"
+      color="medium"
+      class="cancel-button">
+      <ion-icon slot="start" name="close"></ion-icon>
+      Cancelar
+    </ion-button>
+    
+    <ion-button 
+      expand="block" 
+      type="submit" 
+      [disabled]="form.invalid || isSubmitting"
+      (click)="onSubmit()"
+      class="submit-button">
+      <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="!isSubmitting" slot="start" name="checkmark"></ion-icon>
+      {{ isEditMode ? 'Atualizar' : 'Salvar' }}
+    </ion-button>
+  </div>
+</ion-content>

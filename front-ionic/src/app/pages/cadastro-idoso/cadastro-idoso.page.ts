@@ -1,28 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonTextarea,
-  IonBackButton,
-  IonButtons,
-  IonIcon,
-  IonModal,
-  IonList,
-  IonNote,
-  
-} from '@ionic/angular/standalone';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { personOutline, calendarOutline, arrowBackOutline, medicalOutline, callOutline, closeOutline } from 'ionicons/icons';
 import { ElderlyService } from '../../services/elderly.service';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-cadastro-idoso',
@@ -30,23 +13,9 @@ import { NgIf } from '@angular/common';
   styleUrls: ['./cadastro-idoso.page.scss'],
   standalone: true,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButton,
-    IonInput,
-    IonItem,
-    IonLabel,
-    IonTextarea,
-    IonBackButton,
-    IonButtons,
-    IonIcon,
-    IonModal,
-    IonList,
-    IonNote,
-    FormsModule,
-    NgIf
+    CommonModule,
+    IonicModule,
+    FormsModule
   ]
 })
 export class CadastroIdosoPage {

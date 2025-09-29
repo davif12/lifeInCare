@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environment } from './environment';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +38,10 @@ export class AuthService {
   logout(): void {
     this.clearAuth();
     this.router.navigate(['/entrada']);
+  }
+
+  clearAuthData(): void {
+    this.clearAuth();
   }
 
   isLoggedIn(): boolean {

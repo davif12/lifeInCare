@@ -1,0 +1,111 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home-idoso"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Minhas Consultas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="refresh-outline"
+      refreshingSpinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="ion-padding">
+    <!-- Estado vazio -->
+    <div *ngIf="consultations.length === 0 && !loading" class="empty-state">
+      <ion-icon name="calendar-clear-outline" size="large"></ion-icon>
+      <h2>Nenhuma consulta agendada</h2>
+      <p>Você não possui consultas cadastradas no momento.</p>
+      <p><small>Suas consultas agendadas pelo cuidador aparecerão aqui.</small></p>
+    </div>
+
+    <!-- Lista de consultas -->
+    <div *ngIf="consultations.length > 0">
+      <!-- Consultas próximas -->
+      <div class="section">
+        <h3 class="section-title">
+          <ion-icon name="calendar-outline"></ion-icon>
+          Próximas Consultas
+        </h3>
+        
+        <ion-card *ngFor="let consultation of consultations" 
+                  [class.upcoming]="isUpcoming(consultation.scheduledDateTime)"
+                  [class.past]="isPast(consultation.scheduledDateTime)">
+          <ion-card-header>
+            <ion-card-subtitle>
+              <ion-badge [color]="getStatusColor(consultation.status || 'scheduled')">
+                {{ getStatusText(consultation.status || 'scheduled') }}
+              </ion-badge>
+              <ion-badge color="light" class="type-badge">
+                {{ getTypeText(consultation.type) }}
+              </ion-badge>
+            </ion-card-subtitle>
+            <ion-card-title>{{ consultation.specialty }}</ion-card-title>
+          </ion-card-header>
+          
+          <ion-card-content>
+            <div class="consultation-info">
+              <div class="info-row">
+                <ion-icon name="person-outline"></ion-icon>
+                <span><strong>Médico:</strong> Dr(a). {{ consultation.doctorName }}</span>
+              </div>
+              
+              <div class="info-row">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span><strong>Data:</strong> {{ consultation.scheduledDateTime | date:'fullDate' }}</span>
+              </div>
+              
+              <div class="info-row">
+                <ion-icon name="time-outline"></ion-icon>
+                <span><strong>Horário:</strong> {{ consultation.scheduledDateTime | date:'shortTime' }}</span>
+              </div>
+              
+              <div class="info-row">
+                <ion-icon name="location-outline"></ion-icon>
+                <span><strong>Local:</strong> {{ consultation.location }}</span>
+              </div>
+              
+              <div class="info-row">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <span><strong>Motivo:</strong> {{ consultation.reason }}</span>
+              </div>
+              
+              <div *ngIf="consultation.notes" class="info-row">
+                <ion-icon name="chatbox-outline"></ion-icon>
+                <span><strong>Observações:</strong> {{ consultation.notes }}</span>
+              </div>
+              
+              <div *ngIf="consultation.result" class="info-row">
+                <ion-icon name="clipboard-outline"></ion-icon>
+                <span><strong>Resultado:</strong> {{ consultation.result }}</span>
+              </div>
+              
+              <div *ngIf="consultation.prescriptions" class="info-row">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <span><strong>Prescrições Médicas:</strong> {{ consultation.prescriptions }}</span>
+              </div>
+              
+              <div *ngIf="consultation.prescriptions" class="info-note">
+                <ion-note color="medium">
+                  <ion-icon name="information-circle-outline" size="small"></ion-icon>
+                  Para medicamentos detalhados, consulte a aba "Medicamentos"
+                </ion-note>
+              </div>
+              
+              <div *ngIf="consultation.nextAppointment" class="info-row">
+                <ion-icon name="calendar-number-outline"></ion-icon>
+                <span><strong>Próxima consulta:</strong> {{ consultation.nextAppointment | date:'shortDate' }}</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+</ion-content>

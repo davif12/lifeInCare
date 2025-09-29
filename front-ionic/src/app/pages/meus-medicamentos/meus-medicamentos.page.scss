@@ -11,6 +11,58 @@
   }
 }
 
+.next-dose {
+  color: var(--ion-color-primary);
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.medication-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.medication-card {
+  margin: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  ion-icon {
+    margin-top: 2px;
+    font-size: 18px;
+  }
+
+  div {
+    flex: 1;
+
+    strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ion-color-dark);
+    }
+
+    p {
+      margin: 0;
+      color: var(--ion-color-medium-shade);
+    }
+  }
+}
+
 .empty-state {
   display: flex;
   flex-direction: column;

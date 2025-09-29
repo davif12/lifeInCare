@@ -20,6 +20,7 @@ import {
 import { ReminderService } from './reminder.service';
 import { CreateReminderDto } from './dto/create-reminder.dto';
 import { UpdateReminderDto } from './dto/update-reminder.dto';
+import { ReminderQueryDto } from './dto/reminder-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('reminders')
@@ -75,6 +76,52 @@ export class ReminderController {
   findActive(@Request() req) {
     const caregiverId = req.user.sub;
     return this.reminderService.findActive(caregiverId);
+  }
+
+  @Get('sorted-by-next-occurrence')
+  @ApiOperation({ 
+    summary: 'Listar lembretes ordenados por próxima ocorrência',
+    description: 'Retorna lembretes ordenados pela próxima data/hora de ocorrência, considerando lembretes únicos e recorrentes. Lembretes passados ou sem próxima ocorrência são filtrados.'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de lembretes ordenada por próxima ocorrência retornada com sucesso.',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              title: { type: 'string' },
+              description: { type: 'string' },
+              type: { type: 'string' },
+              reminderDateTime: { type: 'string', format: 'date-time' },
+              frequency: { type: 'string' },
+              status: { type: 'string' },
+              nextOccurrence: { type: 'string', format: 'date-time' },
+              elderlyUser: { type: 'object' },
+              caregiverUser: { type: 'object' }
+            }
+          }
+        },
+        pagination: {
+          type: 'object',
+          properties: {
+            page: { type: 'number' },
+            limit: { type: 'number' },
+            total: { type: 'number' },
+            totalPages: { type: 'number' }
+          }
+        }
+      }
+    }
+  })
+  findSortedByNextOccurrence(@Query() queryDto: ReminderQueryDto, @Request() req) {
+    const caregiverId = req.user.sub;
+    return this.reminderService.findSortedByNextOccurrence(caregiverId, queryDto);
   }
 
   @Get('patient/:patientId')
