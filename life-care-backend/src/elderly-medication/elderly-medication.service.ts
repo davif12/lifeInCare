@@ -76,6 +76,39 @@ export class ElderlyMedicationService {
   }
 
   /**
+   * DEBUG - Buscar TODOS os medicamentos no banco
+   */
+  async findAllMedicationsForDebug(): Promise<Medication[]> {
+    this.logger.log('=== DEBUG: BUSCANDO TODOS OS MEDICAMENTOS ===');
+    
+    const allMedications = await this.elderlyMedicationRepository.find({
+      order: { createdAt: 'DESC' },
+    });
+    
+    this.logger.log(`Total de medicamentos no banco: ${allMedications.length}`);
+    allMedications.forEach((med, index) => {
+      this.logger.log(`${index + 1}. ${med.name} - elderlyUserId: ${med.elderlyUserId}`);
+    });
+    
+    return allMedications;
+  }
+
+  /**
+   * DEBUG - Busca forçada com ID específico
+   */
+  async findByElderlyUserIdForced(elderlyUserId: string): Promise<Medication[]> {
+    this.logger.log(`=== DEBUG: BUSCA FORÇADA COM ID: ${elderlyUserId} ===`);
+    
+    const medications = await this.elderlyMedicationRepository.find({
+      where: { elderlyUserId },
+      order: { createdAt: 'DESC' },
+    });
+    
+    this.logger.log(`Medicamentos encontrados na busca forçada: ${medications.length}`);
+    return medications;
+  }
+
+  /**
    * Buscar medicamentos ativos de um idoso
    */
   async findActiveByElderlyUserId(elderlyUserId: string): Promise<Medication[]> {
@@ -168,17 +201,40 @@ export class ElderlyMedicationService {
    * Remover medicamento permanentemente
    */
   async remove(id: string, caregiverUserId: string): Promise<void> {
-    this.logger.log(`Removendo medicamento ${id} pelo cuidador ${caregiverUserId}`);
+    this.logger.log(`=== REMOVENDO MEDICAMENTO ===`);
+    this.logger.log(`ID do medicamento: ${id}`);
+    this.logger.log(`Cuidador: ${caregiverUserId}`);
 
-    const medication = await this.findOne(id);
+    try {
+      // Verificar se o medicamento existe
+      const medication = await this.elderlyMedicationRepository.findOne({
+        where: { id },
+      });
 
-    // Verificar se o cuidador tem permissão
-    if (medication.caregiverUserId !== caregiverUserId) {
-      throw new ForbiddenException('Você não tem permissão para remover este medicamento');
+      if (!medication) {
+        this.logger.error(`❌ Medicamento ${id} não encontrado`);
+        throw new NotFoundException(`Medicamento com ID ${id} não encontrado`);
+      }
+
+      this.logger.log(`✅ Medicamento encontrado: ${medication.name}`);
+      this.logger.log(`Cuidador do medicamento: ${medication.caregiverUserId}`);
+      this.logger.log(`Cuidador solicitante: ${caregiverUserId}`);
+
+      // Verificar se o cuidador tem permissão
+      if (medication.caregiverUserId !== caregiverUserId) {
+        this.logger.error(`❌ Cuidador ${caregiverUserId} não tem permissão para remover medicamento do cuidador ${medication.caregiverUserId}`);
+        throw new ForbiddenException('Você não tem permissão para remover este medicamento');
+      }
+
+      this.logger.log(`🗑️ Removendo medicamento do banco de dados...`);
+      await this.elderlyMedicationRepository.remove(medication);
+      this.logger.log(`✅ Medicamento ${id} removido com sucesso`);
+
+    } catch (error) {
+      this.logger.error(`❌ Erro ao remover medicamento ${id}:`, error.message);
+      this.logger.error(`Stack trace:`, error.stack);
+      throw error;
     }
-
-    await this.elderlyMedicationRepository.remove(medication);
-    this.logger.log(`Medicamento ${id} removido com sucesso`);
   }
 
   /**
@@ -240,5 +296,31 @@ export class ElderlyMedicationService {
 
     this.logger.log(`Encontrados ${todaySchedule.length} horários para hoje`);
     return todaySchedule;
+  }
+
+  /**
+   * Buscar medicamentos por ID do cuidador
+   */
+  async findByCaregiverId(caregiverUserId: string): Promise<Medication[]> {
+    this.logger.log(`Buscando medicamentos para cuidador ${caregiverUserId}`);
+    
+    return this.elderlyMedicationRepository.find({
+      where: { caregiverUserId },
+      relations: ['elderlyUser', 'caregiverUser'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Buscar medicamentos por ID do idoso
+   */
+  async findByElderlyId(elderlyUserId: string): Promise<Medication[]> {
+    this.logger.log(`Buscando medicamentos para idoso ${elderlyUserId}`);
+    
+    return this.elderlyMedicationRepository.find({
+      where: { elderlyUserId },
+      relations: ['elderlyUser', 'caregiverUser'],
+      order: { createdAt: 'DESC' },
+    });
   }
 }

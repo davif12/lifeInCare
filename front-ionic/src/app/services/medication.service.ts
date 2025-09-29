@@ -4,15 +4,15 @@ import { Observable, tap, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface Medication {
-  id?: string;
+  id?: string; // Opcional para criação, obrigatório após criado
   name: string;
   dosage: string;
   frequency: string;
-  schedules: string[];
+  times: string[];
   startDate: string;
   endDate?: string;
   instructions?: string;
-  patientId: string;
+  elderlyId: string;
   isActive?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -22,7 +22,7 @@ export interface Medication {
   providedIn: 'root'
 })
 export class MedicationService {
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = 'http://localhost:3006';
 
   constructor(
     private http: HttpClient,
@@ -61,13 +61,13 @@ export class MedicationService {
       );
   }
 
-  // Obter medicamentos de um paciente específico
-  getMedicationsByPatient(patientId: string): Observable<Medication[]> {
-    return this.http.get<Medication[]>(`${this.apiUrl}/medications/patient/${patientId}`, { headers: this.getHeaders() })
+  // Obter medicamentos de um idoso específico
+  getMedicationsByElderly(elderlyId: string): Observable<Medication[]> {
+    return this.http.get<Medication[]>(`${this.apiUrl}/medications/elderly/${elderlyId}`, { headers: this.getHeaders() })
       .pipe(
-        tap(response => console.log('Medicamentos do paciente:', response)),
+        tap(response => console.log('Medicamentos do idoso:', response)),
         catchError(error => {
-          console.error('Erro ao obter medicamentos do paciente:', error);
+          console.error('Erro ao obter medicamentos do idoso:', error);
           return throwError(() => error);
         })
       );
@@ -169,8 +169,8 @@ export class MedicationService {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      console.log('Fazendo requisição para:', `${this.apiUrl}/medications/patient/my-medications`);
-      const response = await this.http.get<Medication[]>(`${this.apiUrl}/medications/patient/my-medications`, { 
+      console.log('Fazendo requisição para:', `${this.apiUrl}/medications`);
+      const response = await this.http.get<Medication[]>(`${this.apiUrl}/medications`, { 
         headers
       }).toPromise();
       

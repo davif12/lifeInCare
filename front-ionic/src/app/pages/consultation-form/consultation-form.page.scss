@@ -1,0 +1,228 @@
+// Container principal
+.form-container {
+  padding: 16px;
+  padding-bottom: 120px; // Espaço para botões fixos
+}
+
+// Grupos de campos
+.form-group {
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--ion-color-light-shade);
+}
+
+.group-title {
+  display: flex;
+  align-items: center;
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+
+  ion-icon {
+    margin-right: 8px;
+    font-size: 20px;
+  }
+}
+
+// Items do formulário
+ion-item {
+  --padding-start: 0;
+  --padding-end: 0;
+  --background: transparent;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+// Mensagens de erro
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 12px;
+  margin: 4px 0 12px 0;
+  padding-left: 4px;
+  font-weight: 500;
+}
+
+// Contador de caracteres
+.character-counter {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  text-align: right;
+  margin: 4px 0 8px 0;
+}
+
+// DateTime button melhorado
+.datetime-button {
+  width: 100%;
+  --color: var(--ion-color-dark);
+  --background: var(--ion-color-light-tint);
+  --border-radius: 8px;
+  margin-top: 8px;
+}
+
+ion-datetime-button {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+// Preview da data/hora
+.datetime-preview {
+  margin-top: 12px;
+  
+  ion-chip {
+    --background: var(--ion-color-primary-tint);
+    --color: var(--ion-color-primary-contrast);
+  }
+}
+
+// Campos inválidos
+ion-input.ion-invalid.ion-touched,
+ion-textarea.ion-invalid.ion-touched {
+  --border-color: var(--ion-color-danger);
+  --color: var(--ion-color-danger);
+}
+
+// Resumo da consulta
+.consultation-summary {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  width: 300px;
+  z-index: 1000;
+  
+  @media (max-width: 768px) {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    margin: 16px;
+  }
+
+  ion-card {
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  ion-card-title {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    
+    ion-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .summary-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    
+    ion-icon {
+      margin-right: 8px;
+      color: var(--ion-color-medium);
+    }
+    
+    strong {
+      margin-right: 4px;
+    }
+  }
+}
+
+// Botões fixos no rodapé
+.sticky-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--ion-background-color);
+  padding: 16px;
+  border-top: 1px solid var(--ion-color-light-shade);
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+
+  .cancel-button {
+    --color: var(--ion-color-medium);
+    --border-color: var(--ion-color-medium);
+  }
+
+  .submit-button {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+    font-weight: 600;
+    
+    &:disabled {
+      --background: var(--ion-color-light);
+      --color: var(--ion-color-medium);
+    }
+  }
+}
+
+// Espaçamento para botões fixos
+.bottom-spacing {
+  height: 80px;
+}
+
+// Responsividade mobile
+@media (max-width: 768px) {
+  .form-container {
+    padding: 12px;
+    padding-bottom: 100px;
+  }
+  
+  .form-group {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .group-title {
+    font-size: 16px;
+  }
+  
+  .sticky-footer {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    
+    .cancel-button {
+      order: 2;
+    }
+    
+    .submit-button {
+      order: 1;
+    }
+  }
+}
+
+// Acessibilidade e foco
+ion-button:focus,
+ion-input:focus,
+ion-textarea:focus,
+ion-select:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+// Animações suaves
+ion-item,
+ion-card,
+ion-button {
+  transition: all 0.2s ease-in-out;
+}
+
+ion-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+// Estados de loading
+ion-spinner {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}

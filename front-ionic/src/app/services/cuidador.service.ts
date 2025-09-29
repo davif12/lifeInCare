@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CuidadorService {
-  private apiUrl = 'http://localhost:3001'; // URL do backend NestJS
+  private apiUrl = 'http://localhost:3006'; // URL do backend NestJS
 
   constructor(private http: HttpClient) { }
 

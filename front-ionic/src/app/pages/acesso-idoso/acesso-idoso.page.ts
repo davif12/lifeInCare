@@ -1,23 +1,10 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { 
-  IonButton, 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
-  IonToolbar, 
-  IonInput, 
-  IonItem, 
-  IonLabel,
-  IonBackButton,
-  IonButtons,
-  IonIcon,
-  IonSpinner
-} from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { keyOutline, arrowBackOutline, alertCircleOutline } from 'ionicons/icons';
-import { NgIf } from '@angular/common';
 import { ElderlyService } from '../../services/elderly.service';
 
 @Component({
@@ -26,20 +13,9 @@ import { ElderlyService } from '../../services/elderly.service';
   styleUrls: ['./acesso-idoso.page.scss'],
   standalone: true,
   imports: [
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonButton, 
-    IonInput, 
-    IonItem, 
-    IonLabel,
-    IonBackButton,
-    IonButtons,
-    IonIcon,
-    IonSpinner,
-    FormsModule,
-    NgIf
+    CommonModule,
+    IonicModule,
+    FormsModule
   ]
 })
 export class AcessoIdosoPage {

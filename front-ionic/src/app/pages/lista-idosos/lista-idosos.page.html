@@ -71,10 +71,23 @@
               <strong>Contato de emergência:</strong> {{ idoso.contactInfo }}
             </p>
             
-            <ion-button expand="block" (click)="visualizarIdoso(idoso.id)" class="view-button">
-              <ion-icon slot="start" name="eye-outline"></ion-icon>
-              Ver como Idoso
-            </ion-button>
+            <div class="action-buttons">
+              <ion-button expand="block" (click)="visualizarIdoso(idoso.id)" class="view-button">
+                <ion-icon slot="start" name="eye-outline"></ion-icon>
+                Ver como Idoso
+              </ion-button>
+              
+              <ion-button 
+                expand="block" 
+                fill="outline" 
+                color="primary" 
+                (click)="gerenciarConsultas(idoso.id)" 
+                class="consultation-button">
+                <ion-icon slot="start" name="calendar-outline"></ion-icon>
+                Gerenciar Consultas
+              </ion-button>
+              
+            </div>
           </ion-card-content>
         </ion-card>
       </ion-list>

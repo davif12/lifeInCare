@@ -1,20 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
-  IonToolbar,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonCard,
-  IonCardContent,
-  IonGrid,
-  IonRow,
-  IonCol
-} from '@ionic/angular/standalone';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { addIcons } from 'ionicons';
 import { 
@@ -22,7 +9,6 @@ import {
   personAddOutline,
   medkitOutline, 
   calendarOutline, 
-  notificationsOutline,
   exitOutline,
   peopleOutline
 } from 'ionicons/icons';
@@ -34,31 +20,22 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButtons,
-    IonButton,
-    IonIcon,
-    IonCard,
-    IonCardContent,
-    IonGrid,
-    IonRow,
-    IonCol,
+    IonicModule,
     RouterLink
   ]
 })
 export class HomeCuidadorPage implements OnInit {
   userData: any = null;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {
     addIcons({
       'person-outline': personOutline,
       'person-add-outline': personAddOutline,
       'medicine-outline': medkitOutline,
       'calendar-outline': calendarOutline,
-      'notifications-outline': notificationsOutline,
       'exit-outline': exitOutline,
       'people-outline': peopleOutline
     });
@@ -66,6 +43,11 @@ export class HomeCuidadorPage implements OnInit {
 
   ngOnInit() {
     this.userData = this.authService.getUser();
+  }
+
+  navigateToMedicamentos() {
+    console.log('=== NAVEGANDO PARA MEDICAMENTOS ===');
+    this.router.navigate(['/medicamentos']);
   }
 
   logout() {

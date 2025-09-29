@@ -1,20 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { 
-  IonContent, 
-  IonHeader, 
-  IonTitle, 
-  IonToolbar, 
-  IonButton,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonBackButton,
-  IonButtons,
-  IonList,
-  ToastController
-} from '@ionic/angular/standalone';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
@@ -36,18 +22,7 @@ import { firstValueFrom } from 'rxjs';
   imports: [
     CommonModule,
     FormsModule,
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonButton,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonBackButton,
-    IonButtons,
-    IonList,
+    IonicModule,
     RouterLink
   ]
 })

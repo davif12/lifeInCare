@@ -5,6 +5,7 @@ import { Reminder, ReminderStatus, ReminderFrequency } from './reminder.entity';
 import { User, UserRole } from '../users/entities/user.entity';
 import { CreateReminderDto } from './dto/create-reminder.dto';
 import { UpdateReminderDto } from './dto/update-reminder.dto';
+import { ReminderQueryDto } from './dto/reminder-query.dto';
 import { CaregiverElderlyService } from '../users/caregiver-elderly.service';
 
 @Injectable()
@@ -200,6 +201,110 @@ export class ReminderService {
     });
 
     return reminders;
+  }
+
+  /**
+   * Buscar lembretes ordenados por próxima ocorrência
+   */
+  async findSortedByNextOccurrence(caregiverUserId: string, queryDto: ReminderQueryDto) {
+    const { status, elderlyUserId } = queryDto;
+    const page = queryDto.page || 1;
+    const limit = queryDto.limit || 20;
+    const now = new Date();
+    
+    // Construir condições da query
+    const whereConditions: any = {
+      caregiverUserId,
+      status: status || ReminderStatus.ACTIVE,
+    };
+
+    if (elderlyUserId) {
+      whereConditions.elderlyUserId = elderlyUserId;
+    }
+
+    // Buscar todos os lembretes que atendem aos critérios
+    const allReminders = await this.reminderRepository.find({
+      where: whereConditions,
+      relations: ['elderlyUser', 'caregiverUser'],
+    });
+
+    // Calcular próxima ocorrência para cada lembrete
+    const remindersWithNextOccurrence = allReminders
+      .map(reminder => {
+        const nextOccurrence = this.calculateNextOccurrenceForReminder(reminder, now);
+        return {
+          ...reminder,
+          nextOccurrence,
+        };
+      })
+      .filter(reminder => reminder.nextOccurrence !== null) // Filtrar lembretes sem próxima ocorrência
+      .sort((a, b) => {
+        // Ordenar por próxima ocorrência (ASC)
+        if (a.nextOccurrence && b.nextOccurrence) {
+          return a.nextOccurrence.getTime() - b.nextOccurrence.getTime();
+        }
+        return 0;
+      });
+
+    // Aplicar paginação
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedReminders = remindersWithNextOccurrence.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedReminders,
+      pagination: {
+        page,
+        limit,
+        total: remindersWithNextOccurrence.length,
+        totalPages: Math.ceil(remindersWithNextOccurrence.length / limit),
+      },
+    };
+  }
+
+  /**
+   * Calcular a próxima ocorrência de um lembrete considerando sua frequência e regras
+   */
+  private calculateNextOccurrenceForReminder(reminder: Reminder, now: Date): Date | null {
+    const maxIterations = 1000; // Limite de segurança para evitar loops infinitos
+    let iterations = 0;
+    
+    // Se é um lembrete único
+    if (reminder.frequency === ReminderFrequency.ONCE) {
+      // Se a data já passou, não há próxima ocorrência
+      if (reminder.reminderDateTime <= now) {
+        return null;
+      }
+      return reminder.reminderDateTime;
+    }
+
+    // Para lembretes recorrentes, começar da data original ou da última execução
+    let candidateDate = new Date(reminder.lastExecuted || reminder.reminderDateTime);
+    
+    // Se a data candidata já passou, calcular a próxima
+    while (candidateDate <= now && iterations < maxIterations) {
+      const nextDate = this.calculateNextExecution(candidateDate, reminder.frequency, reminder.customIntervalMinutes);
+      
+      if (!nextDate) {
+        return null;
+      }
+      
+      candidateDate = nextDate;
+      iterations++;
+    }
+
+    // Verificar se excedeu o limite de iterações
+    if (iterations >= maxIterations) {
+      console.warn(`Limite de iterações excedido para lembrete ${reminder.id}`);
+      return null;
+    }
+
+    // Verificar se há data de fim e se a próxima ocorrência está dentro do limite
+    if (reminder.endDate && candidateDate > reminder.endDate) {
+      return null;
+    }
+
+    return candidateDate;
   }
 
   private calculateNextExecution(currentDate: Date, frequency: ReminderFrequency, customIntervalMinutes?: number): Date | null {

@@ -1,0 +1,170 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="goBack()" defaultHref="/cuidador/lista-idosos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cadastrar Medicamento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container">
+    <!-- Informações do Idoso -->
+    <ion-card *ngIf="elderly" class="elderly-info">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person-outline"></ion-icon>
+          {{ elderly.name }}
+        </ion-card-title>
+      </ion-card-header>
+    </ion-card>
+
+    <!-- Formulário de Medicamento -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="medical-outline"></ion-icon>
+          Informações do Medicamento
+        </ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <form (ngSubmit)="onSubmit()">
+          <!-- Nome do Medicamento -->
+          <ion-item>
+            <ion-label position="stacked">Nome do Medicamento *</ion-label>
+            <ion-input 
+              [(ngModel)]="medicamento.name"
+              name="name"
+              placeholder="Ex: Paracetamol"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <!-- Dosagem -->
+          <ion-item>
+            <ion-label position="stacked">Dosagem *</ion-label>
+            <ion-input 
+              [(ngModel)]="medicamento.dosage"
+              name="dosage"
+              placeholder="Ex: 500mg, 1 comprimido"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <!-- Frequência -->
+          <ion-item>
+            <ion-label position="stacked">Frequência</ion-label>
+            <ion-select 
+              [(ngModel)]="medicamento.frequency"
+              name="frequency"
+              placeholder="Selecione a frequência">
+              <ion-select-option 
+                *ngFor="let option of frequencyOptions" 
+                [value]="option.value">
+                {{ option.label }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Horários -->
+          <div class="times-section">
+            <ion-item>
+              <ion-label>
+                <h3>
+                  <ion-icon name="time-outline"></ion-icon>
+                  Horários
+                </h3>
+              </ion-label>
+              <ion-button 
+                fill="clear" 
+                slot="end" 
+                (click)="addTime()">
+                <ion-icon name="add-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+
+            <ion-item *ngFor="let time of medicamento.times; let i = index">
+              <ion-label position="stacked">Horário {{ i + 1 }}</ion-label>
+              <ion-datetime 
+                [(ngModel)]="medicamento.times[i]"
+                [name]="'time_' + i"
+                presentation="time"
+                [showDefaultButtons]="true">
+              </ion-datetime>
+              <ion-button 
+                *ngIf="medicamento.times.length > 1"
+                fill="clear" 
+                color="danger" 
+                slot="end" 
+                (click)="removeTime(i)">
+                <ion-icon name="remove-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </div>
+
+          <!-- Data de Início -->
+          <ion-item>
+            <ion-label position="stacked">Data de Início</ion-label>
+            <ion-datetime 
+              [(ngModel)]="medicamento.startDate"
+              name="startDate"
+              presentation="date"
+              [showDefaultButtons]="true">
+            </ion-datetime>
+          </ion-item>
+
+          <!-- Data de Fim (Opcional) -->
+          <ion-item>
+            <ion-label position="stacked">Data de Fim (Opcional)</ion-label>
+            <ion-datetime 
+              [(ngModel)]="medicamento.endDate"
+              name="endDate"
+              presentation="date"
+              [showDefaultButtons]="true">
+            </ion-datetime>
+          </ion-item>
+
+          <!-- Instruções Especiais -->
+          <ion-item>
+            <ion-label position="stacked">Instruções Especiais</ion-label>
+            <ion-textarea 
+              [(ngModel)]="medicamento.instructions"
+              name="instructions"
+              placeholder="Ex: Tomar com alimentos, evitar álcool..."
+              rows="3">
+            </ion-textarea>
+          </ion-item>
+
+          <!-- Mensagem de Erro -->
+          <div *ngIf="errorMessage" class="error-message">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ errorMessage }}
+          </div>
+
+          <!-- Botões -->
+          <div class="buttons-container">
+            <ion-button 
+              expand="block" 
+              type="submit" 
+              [disabled]="isLoading"
+              color="primary">
+              <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+              <span *ngIf="!isLoading">Cadastrar Medicamento</span>
+              <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+            </ion-button>
+
+            <ion-button 
+              expand="block" 
+              fill="outline" 
+              (click)="goBack()"
+              color="medium">
+              <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+              Voltar
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

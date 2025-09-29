@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, IonIcon } from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { personOutline, medkitOutline } from 'ionicons/icons';
 
@@ -9,7 +10,7 @@ import { personOutline, medkitOutline } from 'ionicons/icons';
   templateUrl: './entrada.page.html',
   styleUrls: ['./entrada.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, RouterLink]
+  imports: [CommonModule, IonicModule, RouterLink]
 })
 export class EntradaPage {
   constructor() {

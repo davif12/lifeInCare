@@ -6,6 +6,21 @@ import { Router } from '@angular/router';
 import { CaregiverMedicationService, CreateElderlyMedicationRequest, ElderlyMedication, AvailableElderly } from '../../services/caregiver-medication.service';
 import { ElderlyService } from '../../services/elderly.service';
 import { firstValueFrom } from 'rxjs';
+import { addIcons } from 'ionicons';
+import { 
+  medicalOutline,
+  addOutline,
+  refreshOutline,
+  arrowBackOutline,
+  trashOutline,
+  playOutline,
+  pauseOutline,
+  timeOutline,
+  calendarOutline,
+  informationCircleOutline,
+  alarmOutline,
+  closeCircleOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-medicamentos',
@@ -41,9 +56,26 @@ export class MedicamentosPage implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController,
     private router: Router
-  ) { }
+  ) {
+    // Adicionar ícones
+    addIcons({
+      'medical-outline': medicalOutline,
+      'add-outline': addOutline,
+      'refresh-outline': refreshOutline,
+      'arrow-back-outline': arrowBackOutline,
+      'trash-outline': trashOutline,
+      'play-outline': playOutline,
+      'pause-outline': pauseOutline,
+      'time-outline': timeOutline,
+      'calendar-outline': calendarOutline,
+      'information-circle-outline': informationCircleOutline,
+      'alarm-outline': alarmOutline,
+      'close-circle-outline': closeCircleOutline
+    });
+  }
 
   ngOnInit() {
+    console.log('=== MEDICAMENTOS PAGE: ngOnInit CHAMADO ===');
     this.debugAuth();
     this.loadData();
   }
@@ -61,6 +93,7 @@ export class MedicamentosPage implements OnInit {
   }
 
   async loadData() {
+    console.log('=== MEDICAMENTOS PAGE: INICIANDO LOADDATA ===');
     this.loading = true;
     try {
       console.log('=== CARREGANDO DADOS ===');
@@ -129,67 +162,6 @@ export class MedicamentosPage implements OnInit {
     this.scheduleTime = '';
   }
 
-  async addMedication() {
-    console.log('=== INICIANDO ADIÇÃO DE MEDICAMENTO ===');
-    console.log('Dados atuais do formulário:', {
-      name: this.newMedication.name,
-      dosage: this.newMedication.dosage,
-      frequency: this.newMedication.frequency,
-      schedules: this.newMedication.schedules,
-      startDate: this.newMedication.startDate,
-      endDate: this.newMedication.endDate,
-      elderlyUserId: this.newMedication.elderlyUserId,
-      instructions: this.newMedication.instructions,
-      notes: this.newMedication.notes
-    });
-
-    if (!this.validateForm()) {
-      console.log('Validação do formulário falhou');
-      return;
-    }
-
-    console.log('Validação passou, enviando para API...');
-    this.loading = true;
-    
-    try {
-      console.log('Chamando caregiverMedicationService.createMedication...');
-      const result = await firstValueFrom(this.caregiverMedicationService.createMedication(this.newMedication));
-      console.log('Resultado da criação:', result);
-      
-      this.showToast('Medicamento adicionado com sucesso!', 'success');
-      this.resetForm();
-      this.showAddForm = false;
-      await this.loadData();
-    } catch (error: any) {
-      console.error('=== ERRO DETALHADO ===');
-      console.error('Error object:', error);
-      console.error('Error status:', error.status);
-      console.error('Error statusText:', error.statusText);
-      console.error('Error error:', error.error);
-      console.error('Error message:', error.message);
-      
-      let errorMessage = 'Erro ao adicionar medicamento';
-      
-      if (error.status === 401) {
-        errorMessage = 'Sessão expirada. Faça login novamente.';
-      } else if (error.status === 403) {
-        errorMessage = 'Você não tem permissão para esta ação.';
-      } else if (error.status === 400) {
-        errorMessage = error.error?.message || 'Dados inválidos.';
-      } else if (error.error?.message) {
-        errorMessage = error.error.message;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      console.log('Mensagem de erro final:', errorMessage);
-      this.showToast(errorMessage, 'danger');
-    } finally {
-      this.loading = false;
-      console.log('=== FIM DA TENTATIVA DE ADIÇÃO ===');
-    }
-  }
-
   validateForm(): boolean {
     console.log('Validando formulário:', this.newMedication);
     
@@ -226,6 +198,75 @@ export class MedicamentosPage implements OnInit {
     return true;
   }
 
+  async addMedication() {
+    console.log('=== INICIANDO ADIÇÃO DE MEDICAMENTO ===');
+    console.log('Dados atuais do formulário:', {
+      name: this.newMedication.name,
+      dosage: this.newMedication.dosage,
+      frequency: this.newMedication.frequency,
+      schedules: this.newMedication.schedules,
+      startDate: this.newMedication.startDate,
+      endDate: this.newMedication.endDate,
+      elderlyUserId: this.newMedication.elderlyUserId,
+      instructions: this.newMedication.instructions,
+      notes: this.newMedication.notes
+    });
+
+    if (!this.validateForm()) {
+      console.log('Validação do formulário falhou');
+      return;
+    }
+
+    console.log('Validação passou, enviando para API...');
+    this.loading = true;
+    
+    try {
+      console.log('Chamando caregiverMedicationService.createMedication...');
+      console.log('🔍 DEBUG DO CADASTRO:');
+      console.log('- elderlyUserId selecionado:', this.newMedication.elderlyUserId);
+      console.log('- Nome do medicamento:', this.newMedication.name);
+      console.log('- Dados completos:', this.newMedication);
+      
+      const result = await firstValueFrom(this.caregiverMedicationService.createMedication(this.newMedication));
+      console.log('✅ Resultado da criação:', result);
+      console.log('📋 ID do medicamento criado:', result.id);
+      console.log('📋 elderlyUserId no resultado:', result.elderlyUserId);
+      console.log('📋 caregiverUserId no resultado:', result.caregiverUserId);
+      
+      this.showToast('Medicamento adicionado com sucesso!', 'success');
+      this.resetForm();
+      this.showAddForm = false;
+      await this.loadData();
+    } catch (error: any) {
+      console.error('=== ERRO DETALHADO ===');
+      console.error('Error object:', error);
+      console.error('Error status:', error.status);
+      console.error('Error statusText:', error.statusText);
+      console.error('Error error:', error.error);
+      console.error('Error message:', error.message);
+      
+      let errorMessage = 'Erro ao adicionar medicamento';
+      
+      if (error.status === 401) {
+        errorMessage = 'Sessão expirada. Faça login novamente.';
+      } else if (error.status === 403) {
+        errorMessage = 'Você não tem permissão para esta ação.';
+      } else if (error.status === 400) {
+        errorMessage = error.error?.message || 'Dados inválidos.';
+      } else if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      console.log('Mensagem de erro final:', errorMessage);
+      this.showToast(errorMessage, 'danger');
+    } finally {
+      this.loading = false;
+      console.log('=== FIM DA TENTATIVA DE ADIÇÃO ===');
+    }
+  }
+
   async deleteMedication(medication: ElderlyMedication) {
     const alert = await this.alertController.create({
       header: 'Confirmar exclusão',
@@ -252,35 +293,6 @@ export class MedicamentosPage implements OnInit {
     });
 
     await alert.present();
-  }
-
-  async toggleMedicationStatus(medication: ElderlyMedication) {
-    try {
-      if (medication.isActive) {
-        await firstValueFrom(this.caregiverMedicationService.deactivateMedication(medication.id));
-        this.showToast('Medicamento desativado com sucesso!', 'success');
-      } else {
-        // Para reativar, precisamos atualizar o medicamento
-        await firstValueFrom(this.caregiverMedicationService.updateMedication(medication.id, { isActive: true }));
-        this.showToast('Medicamento ativado com sucesso!', 'success');
-      }
-      this.loadData();
-    } catch (error) {
-      console.error('Erro ao alterar status:', error);
-      this.showToast('Erro ao alterar status', 'danger');
-    }
-  }
-
-  getElderlyName(elderlyUserId: string): string {
-    // Primeiro tentar na lista de idosos disponíveis (com UUIDs corretos)
-    const availableElderly = this.availableElderly.find(e => e.id === elderlyUserId);
-    if (availableElderly) {
-      return availableElderly.name;
-    }
-    
-    // Fallback para lista antiga
-    const elderly = this.elderlies.find(e => e.userId === elderlyUserId);
-    return elderly ? elderly.user?.name || elderly.name : 'Idoso não encontrado';
   }
 
   addSchedule() {
@@ -313,6 +325,34 @@ export class MedicamentosPage implements OnInit {
       position: 'top'
     });
     toast.present();
+  }
+
+  getElderlyName(elderlyUserId: string): string {
+    // Primeiro tentar na lista de idosos disponíveis (com UUIDs corretos)
+    const availableElderly = this.availableElderly.find(e => e.id === elderlyUserId);
+    if (availableElderly) {
+      return availableElderly.name;
+    }
+    
+    // Fallback para lista antiga
+    const elderly = this.elderlies.find(e => e.userId === elderlyUserId);
+    return elderly ? elderly.user?.name || elderly.name : 'Idoso não encontrado';
+  }
+
+  async toggleMedicationStatus(medication: ElderlyMedication) {
+    try {
+      if (medication.isActive) {
+        await firstValueFrom(this.caregiverMedicationService.deactivateMedication(medication.id));
+        this.showToast('Medicamento desativado com sucesso!', 'success');
+      } else {
+        await firstValueFrom(this.caregiverMedicationService.updateMedication(medication.id, { isActive: true }));
+        this.showToast('Medicamento ativado com sucesso!', 'success');
+      }
+      this.loadData();
+    } catch (error) {
+      console.error('Erro ao alterar status:', error);
+      this.showToast('Erro ao alterar status', 'danger');
+    }
   }
 
   goBack() {

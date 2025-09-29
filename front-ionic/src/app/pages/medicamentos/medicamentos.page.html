@@ -2,13 +2,13 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()">
-        <ion-icon name="arrow-back"></ion-icon>
+        <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>Medicamentos</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="loadData()" fill="clear">
-        <ion-icon name="refresh"></ion-icon>
+        <ion-icon name="refresh-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -46,7 +46,7 @@
         <ion-label position="stacked">Horários *</ion-label>
         <ion-input [(ngModel)]="scheduleTime" type="time" placeholder="Selecione um horário"></ion-input>
         <ion-button slot="end" fill="solid" color="primary" (click)="addSchedule()" [disabled]="!scheduleTime">
-          <ion-icon name="add"></ion-icon>
+          <ion-icon name="add-outline"></ion-icon>
           <ion-label>Adicionar</ion-label>
         </ion-button>
       </ion-item>
@@ -58,7 +58,7 @@
       <div *ngIf="newMedication.schedules.length > 0" class="schedules-list">
         <ion-chip *ngFor="let schedule of newMedication.schedules; let i = index" color="primary">
           <ion-label>{{schedule}}</ion-label>
-          <ion-icon name="close-circle" (click)="removeSchedule(i)"></ion-icon>
+          <ion-icon name="close-circle-outline" (click)="removeSchedule(i)"></ion-icon>
         </ion-chip>
       </div>
 
@@ -128,11 +128,11 @@
   </div>
 
   <div *ngIf="!loading && medications.length === 0 && !showAddForm" class="empty-state">
-    <ion-icon name="medical" size="large"></ion-icon>
+    <ion-icon name="medical-outline" size="large"></ion-icon>
     <h2>Nenhum medicamento cadastrado</h2>
     <p>Adicione o primeiro medicamento clicando no botão flutuante</p>
     <ion-button expand="block" (click)="toggleAddForm()" class="empty-state-button">
-      <ion-icon name="add" slot="start"></ion-icon>
+      <ion-icon name="add-outline" slot="start"></ion-icon>
       Cadastrar Primeiro Medicamento
     </ion-button>
   </div>
@@ -153,19 +153,19 @@
     <ion-card-content>
       <div class="medication-info">
         <div class="info-row">
-          <ion-icon name="medical"></ion-icon>
+          <ion-icon name="medical-outline"></ion-icon>
           <span><strong>Dosagem:</strong> {{medication.dosage}}</span>
         </div>
         <div class="info-row">
-          <ion-icon name="time"></ion-icon>
+          <ion-icon name="time-outline"></ion-icon>
           <span><strong>Frequência:</strong> {{medication.frequency}}</span>
         </div>
         <div class="info-row" *ngIf="medication.schedules && medication.schedules.length > 0">
-          <ion-icon name="alarm"></ion-icon>
+          <ion-icon name="alarm-outline"></ion-icon>
           <span><strong>Horários:</strong> {{medication.schedules.join(', ')}}</span>
         </div>
         <div class="info-row">
-          <ion-icon name="calendar"></ion-icon>
+          <ion-icon name="calendar-outline"></ion-icon>
           <span><strong>Início:</strong> {{medication.startDate | date:'dd/MM/yyyy'}}</span>
         </div>
         <div class="info-row" *ngIf="medication.endDate">
@@ -173,18 +173,18 @@
           <span><strong>Fim:</strong> {{medication.endDate | date:'dd/MM/yyyy'}}</span>
         </div>
         <div class="info-row" *ngIf="medication.instructions">
-          <ion-icon name="information-circle"></ion-icon>
+          <ion-icon name="information-circle-outline"></ion-icon>
           <span><strong>Instruções:</strong> {{medication.instructions}}</span>
         </div>
       </div>
 
       <div class="action-buttons">
         <ion-button fill="outline" size="small" (click)="toggleMedicationStatus(medication)">
-          <ion-icon name="{{medication.isActive ? 'pause' : 'play'}}" slot="start"></ion-icon>
+          <ion-icon name="{{medication.isActive ? 'pause-outline' : 'play-outline'}}" slot="start"></ion-icon>
           {{medication.isActive ? 'Desativar' : 'Ativar'}}
         </ion-button>
         <ion-button fill="outline" size="small" color="danger" (click)="deleteMedication(medication)">
-          <ion-icon name="trash" slot="start"></ion-icon>
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
           Excluir
         </ion-button>
       </div>
@@ -194,7 +194,7 @@
   <!-- Botão Flutuante para Adicionar Medicamento -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!showAddForm">
     <ion-fab-button (click)="toggleAddForm()" color="primary">
-      <ion-icon name="add"></ion-icon>
+      <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

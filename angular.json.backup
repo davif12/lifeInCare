@@ -68,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "front-ionic:build:production"
+              "browserTarget": "front-ionic:build:production"
             },
             "development": {
-              "buildTarget": "front-ionic:build:development"
+              "browserTarget": "front-ionic:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -79,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "front-ionic:build"
+            "browserTarget": "front-ionic:build"
           }
         },
         "test": {

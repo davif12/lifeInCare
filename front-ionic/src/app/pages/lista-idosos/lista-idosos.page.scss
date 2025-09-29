@@ -84,3 +84,20 @@
     margin-bottom: 16px;
   }
 }
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.view-button {
+  --border-radius: 8px;
+  font-weight: 600;
+}
+
+.medication-button {
+  --border-radius: 8px;
+  font-weight: 600;
+}

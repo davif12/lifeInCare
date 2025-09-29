@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../environment';
 
 export enum ReminderType {
   MEDICATION = 'medication',
@@ -43,15 +44,35 @@ export interface Reminder {
   patientId: string;
   lastExecuted?: Date;
   nextExecution?: Date;
+  nextOccurrence?: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  elderlyUser?: any;
+  caregiverUser?: any;
+}
+
+export interface ReminderQueryParams {
+  status?: ReminderStatus;
+  page?: number;
+  limit?: number;
+  elderlyUserId?: string;
+}
+
+export interface ReminderResponse {
+  data: Reminder[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReminderService {
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,
@@ -181,6 +202,27 @@ export class ReminderService {
         tap(response => console.log('Lembrete adiado:', response)),
         catchError(error => {
           console.error('Erro ao adiar lembrete:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Obter lembretes ordenados por próxima ocorrência
+  getRemindersSortedByNextOccurrence(params?: ReminderQueryParams): Observable<ReminderResponse> {
+    const queryParams = new URLSearchParams();
+    
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.elderlyUserId) queryParams.append('elderlyUserId', params.elderlyUserId);
+
+    const url = `${this.apiUrl}/reminders/sorted-by-next-occurrence${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    
+    return this.http.get<ReminderResponse>(url, { headers: this.getHeaders() })
+      .pipe(
+        tap(response => console.log('Lembretes ordenados por próxima ocorrência:', response)),
+        catchError(error => {
+          console.error('Erro ao obter lembretes ordenados:', error);
           return throwError(() => error);
         })
       );
