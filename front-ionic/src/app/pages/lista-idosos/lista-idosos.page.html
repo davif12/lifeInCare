@@ -84,7 +84,17 @@
                 (click)="gerenciarConsultas(idoso.id)" 
                 class="consultation-button">
                 <ion-icon slot="start" name="calendar-outline"></ion-icon>
-                Gerenciar Consultas
+                Ver Consultas
+              </ion-button>
+
+              <ion-button 
+                expand="block" 
+                fill="solid" 
+                color="success" 
+                (click)="novaConsulta(idoso.id)" 
+                class="new-consultation-button">
+                <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                Agendar Consulta
               </ion-button>
               
             </div>
@@ -92,12 +102,15 @@
         </ion-card>
       </ion-list>
       
-      <div class="ion-padding">
-        <ion-button expand="block" (click)="cadastrarNovoIdoso()" fill="outline">
-          <ion-icon slot="start" name="add-outline"></ion-icon>
-          Cadastrar Novo Idoso
-        </ion-button>
-      </div>
     </div>
   </div>
+
+  <!-- Botão FAB opcional para cadastro rápido (descomente se necessário) -->
+  <!-- 
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="idosos.length > 0">
+    <ion-fab-button (click)="cadastrarNovoIdoso()">
+      <ion-icon name="person-add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  -->
 </ion-content>
