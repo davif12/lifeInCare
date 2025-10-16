@@ -22,31 +22,31 @@
     <p>Carregando medicamentos...</p>
   </div>
 
-  <div *ngIf="!loading && medications.length === 0" class="empty-state">
+  <div *ngIf="!loading && medications.length === 0" class="elderly-empty-state elderly-animate-fadeIn">
     <ion-icon name="medical-outline" size="large"></ion-icon>
     <h2>Nenhum medicamento encontrado</h2>
     <p>Seu cuidador ainda não cadastrou medicamentos para você.</p>
-    <ion-button fill="outline" color="primary" (click)="loadMyMedications()">
+    <ion-button fill="outline" color="primary" (click)="loadMyMedications()" class="elderly-btn elderly-btn-primary elderly-accessible">
       <ion-icon name="refresh-outline" slot="start"></ion-icon>
       Atualizar
     </ion-button>
-    <ion-button fill="outline" color="secondary" (click)="testDatabaseConnection()">
+    <ion-button fill="outline" color="secondary" (click)="testDatabaseConnection()" class="elderly-btn elderly-btn-secondary elderly-accessible">
       <ion-icon name="bug-outline" slot="start"></ion-icon>
       Testar Conexão
     </ion-button>
   </div>
 
-  <ion-list *ngIf="!loading && medications.length > 0">
-    <ion-card *ngFor="let medication of medications" class="medication-card">
-      <ion-card-header>
+  <ion-list *ngIf="!loading && medications.length > 0" class="elderly-animate-fadeIn">
+    <ion-card *ngFor="let medication of medications; let i = index" class="elderly-card elderly-animate-slideIn" [style.animation-delay]="(i * 0.1) + 's'">
+      <div class="elderly-card-header">
         <div class="medication-header">
-          <ion-card-title>{{ medication.name }}</ion-card-title>
-          <ion-chip [color]="getStatusColor(medication.isActive)">
-            <ion-label>{{ getStatusText(medication.isActive) }}</ion-label>
+          <h3 class="title elderly-text-lg elderly-text-semibold">{{ medication.name }}</h3>
+          <ion-chip [color]="getStatusColor(medication.isActive)" class="elderly-animate-pulse">
+            <ion-label class="elderly-text-sm elderly-text-medium">{{ getStatusText(medication.isActive) }}</ion-label>
           </ion-chip>
         </div>
-        <ion-card-subtitle>{{ medication.dosage }}</ion-card-subtitle>
-      </ion-card-header>
+        <p class="subtitle elderly-text-md elderly-text-secondary">{{ medication.dosage }}</p>
+      </div>
 
       <ion-card-content>
         <div class="medication-info">

@@ -1,5 +1,5 @@
 ion-content {
-  --background: linear-gradient(135deg, #000000, #121212);
+  --background: linear-gradient(135deg, var(--elderly-bg-primary), #f0f2f5);
   
   &::before {
     content: "";
@@ -9,8 +9,8 @@ ion-content {
     width: 100%;
     height: 100%;
     background-image: 
-      radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.08) 5%, transparent 15%),
-      radial-gradient(circle at 75% 75%, rgba(255, 215, 0, 0.08) 5%, transparent 15%);
+      radial-gradient(circle at 25% 25%, rgba(74, 144, 226, 0.05) 5%, transparent 15%),
+      radial-gradient(circle at 75% 75%, rgba(126, 211, 33, 0.05) 5%, transparent 15%);
     z-index: 0;
   }
 }
@@ -24,11 +24,12 @@ ion-content {
 }
 
 h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 24px 0 18px;
-  color: var(--ion-color-primary);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: var(--elderly-font-size-xl);
+  font-weight: var(--elderly-font-weight-bold);
+  margin: var(--elderly-spacing-lg) 0 var(--elderly-spacing-md);
+  color: var(--elderly-primary);
+  text-shadow: none;
+  line-height: var(--elderly-line-height-tight);
 }
 
 .welcome-message {
@@ -96,11 +97,11 @@ h2 {
 .menu-card {
   margin: 0;
   height: 100%;
-  border-radius: 16px;
-  background: rgba(30, 30, 30, 0.7);
-  border: 1px solid rgba(255, 215, 0, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  border-radius: var(--elderly-border-radius-lg);
+  background: var(--elderly-bg-card);
+  border: var(--elderly-border-width) solid var(--elderly-border-color);
+  box-shadow: var(--elderly-shadow-md);
+  transition: all var(--elderly-transition-normal);
   overflow: hidden;
   position: relative;
   
@@ -111,39 +112,60 @@ h2 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1), transparent);
+    background: linear-gradient(135deg, var(--elderly-primary), var(--elderly-secondary));
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--elderly-transition-normal);
   }
   
   &:active {
     transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--elderly-shadow-sm);
   }
   
-  &:hover::before {
-    opacity: 1;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--elderly-shadow-lg);
+    
+    &::before {
+      opacity: 0.05;
+    }
+    
+    ion-card-content {
+      ion-icon {
+        color: var(--elderly-primary);
+        transform: scale(1.1);
+      }
+      
+      p {
+        color: var(--elderly-primary);
+      }
+    }
   }
   
   ion-card-content {
-    padding: 24px 16px;
+    padding: var(--elderly-spacing-xl) var(--elderly-spacing-lg);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+    z-index: 1;
     
     ion-icon {
-      font-size: 40px;
-      color: var(--ion-color-primary);
-      margin-bottom: 14px;
+      font-size: 3rem;
+      color: var(--elderly-text-secondary);
+      margin-bottom: var(--elderly-spacing-md);
+      transition: all var(--elderly-transition-normal);
     }
     
     p {
       margin: 0;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #ffffff;
+      font-size: var(--elderly-font-size-lg);
+      font-weight: var(--elderly-font-weight-semibold);
+      color: var(--elderly-text-primary);
       text-align: center;
+      line-height: var(--elderly-line-height-normal);
+      transition: all var(--elderly-transition-normal);
     }
   }
 }
@@ -208,23 +230,33 @@ h2 {
 }
 
 .summary-card {
-  --background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-primary));
-  --color: white;
-  margin: 4px;
+  --background: linear-gradient(135deg, var(--elderly-primary), var(--elderly-primary-light));
+  --color: var(--elderly-text-white);
+  margin: var(--elderly-spacing-xs);
+  border-radius: var(--elderly-border-radius-lg);
+  box-shadow: var(--elderly-shadow-md);
+  transition: all var(--elderly-transition-normal);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--elderly-shadow-lg);
+  }
   
   ion-card-content {
-    padding: 16px;
+    padding: var(--elderly-spacing-lg);
     
     h3 {
-      font-size: 2rem;
-      font-weight: bold;
-      margin: 0 0 8px 0;
+      font-size: var(--elderly-font-size-xxl);
+      font-weight: var(--elderly-font-weight-bold);
+      margin: 0 0 var(--elderly-spacing-sm) 0;
+      line-height: var(--elderly-line-height-tight);
     }
     
     p {
       margin: 0;
-      font-size: 0.9rem;
-      opacity: 0.9;
+      font-size: var(--elderly-font-size-sm);
+      opacity: 0.95;
+      line-height: var(--elderly-line-height-normal);
     }
   }
 }
@@ -234,27 +266,73 @@ h2 {
 }
 
 .next-dose-card {
-  --background: rgba(255, 193, 7, 0.1);
-  border-left: 4px solid var(--ion-color-warning);
+  background: var(--elderly-next-dose-normal);
+  border: none;
+  border-radius: var(--elderly-border-radius-lg);
+  box-shadow: var(--elderly-shadow-lg);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--elderly-transition-normal);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+    z-index: 1;
+  }
+  
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--elderly-shadow-xl);
+  }
   
   ion-card-content {
+    position: relative;
+    z-index: 2;
+    padding: var(--elderly-spacing-lg);
+    
     h3 {
-      color: var(--ion-color-warning-shade);
-      margin-bottom: 8px;
-      font-size: 1.1rem;
+      color: var(--elderly-text-white);
+      margin-bottom: var(--elderly-spacing-md);
+      font-size: var(--elderly-font-size-lg);
+      font-weight: var(--elderly-font-weight-bold);
+      display: flex;
+      align-items: center;
+      
+      &::before {
+        content: '⏰';
+        font-size: 1.5em;
+        margin-right: var(--elderly-spacing-sm);
+        animation: elderly-pulse 2s ease-in-out infinite;
+      }
     }
     
     p {
-      margin: 4px 0;
-      color: #ffffff;
+      margin: var(--elderly-spacing-xs) 0;
+      color: var(--elderly-text-white);
+      line-height: var(--elderly-line-height-normal);
       
       &:first-of-type {
-        font-size: 1.1rem;
+        font-size: var(--elderly-font-size-lg);
+        font-weight: var(--elderly-font-weight-semibold);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
       }
       
       &:last-of-type {
-        color: var(--ion-color-warning);
-        font-weight: 500;
+        color: #fff3cd;
+        font-weight: var(--elderly-font-weight-bold);
+        font-size: var(--elderly-font-size-xl);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.2);
+        padding: var(--elderly-spacing-sm) var(--elderly-spacing-md);
+        border-radius: var(--elderly-border-radius-md);
+        text-align: center;
+        margin-top: var(--elderly-spacing-md);
+        backdrop-filter: blur(10px);
       }
     }
   }

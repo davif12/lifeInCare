@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { IonicModule, LoadingController, AlertController } from '@ionic/angular';
 import { Consultation, ConsultationService } from '../../services/consultation.service';
 import { AuthService } from '../../auth.service';
@@ -22,7 +23,8 @@ export class MyConsultationsPage implements OnInit {
     private consultationService: ConsultationService,
     private authService: AuthService,
     private loadingController: LoadingController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private router: Router
   ) {
     // Adicionar ícones
     addIcons({
@@ -122,5 +124,10 @@ export class MyConsultationsPage implements OnInit {
 
   isPast(dateTime: string): boolean {
     return new Date(dateTime) < new Date();
+  }
+
+  novaConsulta() {
+    // Redirecionar para formulário de nova consulta
+    this.router.navigate(['/consultation-form']);
   }
 }

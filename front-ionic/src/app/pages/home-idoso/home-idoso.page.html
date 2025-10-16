@@ -16,12 +16,12 @@
 
   <div class="dashboard">
     <!-- Resumo de Medicamentos -->
-    <div *ngIf="medicationSummary" class="summary-section">
-      <h2>Resumo dos seus medicamentos</h2>
+    <div *ngIf="medicationSummary" class="summary-section elderly-animate-fadeIn">
+      <h2 class="elderly-text-xl elderly-text-bold">Resumo dos seus medicamentos</h2>
       <ion-grid>
         <ion-row>
           <ion-col size="6">
-            <ion-card class="summary-card">
+            <ion-card class="summary-card elderly-animate-slideIn elderly-animate-delay-1">
               <ion-card-content class="ion-text-center">
                 <h3>{{medicationSummary.activeMedications}}</h3>
                 <p>Medicamentos Ativos</p>
@@ -29,7 +29,7 @@
             </ion-card>
           </ion-col>
           <ion-col size="6">
-            <ion-card class="summary-card">
+            <ion-card class="summary-card elderly-animate-slideIn elderly-animate-delay-2">
               <ion-card-content class="ion-text-center">
                 <h3>{{medicationSummary.todayDoses}}</h3>
                 <p>Doses Hoje</p>
@@ -40,9 +40,9 @@
       </ion-grid>
     </div>
 
-    <!-- Próxima Dose -->
-    <div *ngIf="medicationSummary?.nextDose" class="next-dose-section">
-      <ion-card class="next-dose-card">
+    <!-- Próxima Dose em Destaque -->
+    <div *ngIf="medicationSummary?.nextDose" class="next-dose-section elderly-animate-fadeIn elderly-animate-delay-2">
+      <ion-card class="next-dose-card" [ngClass]="getNextDoseUrgencyClass()">
         <ion-card-content>
           <h3>Próxima dose</h3>
           <p><strong>{{medicationSummary?.nextDose?.medicationName}}</strong></p>
@@ -51,109 +51,80 @@
       </ion-card>
     </div>
 
-    <h2>Seus lembretes e compromissos</h2>
-    
-    <!-- Estado de carregamento -->
-    <div *ngIf="loading" class="ion-text-center ion-padding">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Carregando seus lembretes...</p>
+    <!-- Timeline Unificada -->
+    <div class="unified-timeline-section">
+      <h2 class="elderly-text-xl elderly-text-bold">Sua agenda de hoje</h2>
+      
+      <!-- Estado de carregamento -->
+      <div *ngIf="loading" class="elderly-loading">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Carregando sua agenda...</p>
+      </div>
+      
+      <!-- Timeline Integrada -->
+      <div *ngIf="!loading" class="timeline-container">
+        <ion-card *ngFor="let item of timelineItems; let i = index" 
+                  class="elderly-card timeline-item elderly-animate-slideIn" 
+                  [style.animation-delay]="(i * 0.1) + 's'"
+                  [ngClass]="getTimelineItemClass(item)">
+          
+          <div class="timeline-marker" [ngClass]="item.type">
+            <ion-icon [name]="getTimelineIcon(item.type)"></ion-icon>
+          </div>
+          
+          <div class="elderly-card-content">
+            <div class="timeline-header">
+              <h3 class="elderly-text-lg elderly-text-semibold">{{item.title}}</h3>
+              <ion-chip [color]="getUrgencyColor(item)" size="small">
+                {{getTypeLabel(item.type)}}
+              </ion-chip>
+            </div>
+            
+            <p class="elderly-text-md elderly-text-secondary">{{item.description}}</p>
+            
+            <div class="timeline-time">
+              <ion-icon name="time-outline" color="primary"></ion-icon>
+              <span class="elderly-text-lg elderly-text-primary">{{item.time}}</span>
+            </div>
+            
+            <ion-button *ngIf="item.actionable" 
+                       fill="clear" 
+                       size="small"
+                       [disabled]="item.completed"
+                       (click)="markTimelineItemCompleted(item)"
+                       class="timeline-action">
+              <ion-icon 
+                [name]="item.completed ? 'checkmark-circle' : 'checkmark-circle-outline'" 
+                slot="start"
+                [color]="item.completed ? 'success' : 'primary'">
+              </ion-icon>
+              {{item.completed ? 'Concluído' : 'Marcar como feito'}}
+            </ion-button>
+          </div>
+        </ion-card>
+        
+        <!-- Estado vazio -->
+        <div *ngIf="timelineItems.length === 0" class="elderly-empty-state">
+          <ion-icon name="calendar-clear-outline" size="large"></ion-icon>
+          <h2>Agenda livre hoje!</h2>
+          <p>Você não tem medicamentos, lembretes ou consultas agendados para hoje.</p>
+        </div>
+      </div>
     </div>
     
-    <!-- Lista de lembretes integrados (medicamentos + lembretes + consultas) -->
-    <ion-list *ngIf="!loading">
-      <!-- Medicamentos de hoje (mantido para compatibilidade) -->
-      <div *ngIf="lembretes.length > 0">
-        <h3>Medicamentos de hoje</h3>
-        <ion-item 
-          *ngFor="let lembrete of lembretes" 
-          lines="full" 
-          class="lembrete-item medication"
-          [class.completing]="lembrete.completing">
-          <ion-icon name="medical-outline" slot="start" color="primary"></ion-icon>
-          <ion-label>
-            <h3>{{lembrete.titulo}}</h3>
-            <p>{{lembrete.horario}}</p>
-            <p *ngIf="lembrete.instructions" class="instructions">{{lembrete.instructions}}</p>
-          </ion-label>
-          <ion-button 
-            fill="clear" 
-            slot="end" 
-            [disabled]="lembrete.concluido"
-            (click)="markMedicationAsCompleted(lembrete)">
-            <ion-icon 
-              [name]="lembrete.concluido ? 'checkmark-circle' : 'checkmark-circle-outline'" 
-              slot="icon-only"
-              [color]="lembrete.concluido ? 'success' : 'medium'">
-            </ion-icon>
-          </ion-button>
-        </ion-item>
-      </div>
-
-      <!-- Lembretes e consultas integrados -->
-      <div *ngIf="integratedReminders.length > 0">
-        <h3>Próximos lembretes e consultas</h3>
-        <ion-item 
-          *ngFor="let reminder of integratedReminders" 
-          lines="full" 
-          class="lembrete-item"
-          [class]="reminder.type"
-          [class.completing]="reminder.completing">
-          
-          <ion-icon 
-            [name]="getIconForType(reminder.type)" 
-            slot="start" 
-            [color]="getColorForUrgency(reminder.nextOccurrence)">
-          </ion-icon>
-          
-          <ion-label>
-            <h3>{{reminder.title}}</h3>
-            <p>{{reminder.description}}</p>
-            <p class="time-info">
-              <ion-icon name="time-outline" size="small"></ion-icon>
-              {{getFormattedDateTime(reminder.nextOccurrence)}}
-            </p>
-            <ion-chip 
-              [color]="getColorForUrgency(reminder.nextOccurrence)" 
-              size="small">
-              {{reminder.type === 'consultation' ? 'Consulta' : 'Lembrete'}}
-            </ion-chip>
-          </ion-label>
-          
-          <ion-button 
-            fill="clear" 
-            slot="end" 
-            [disabled]="!reminder.actionable || reminder.status === 'completed'"
-            (click)="markAsCompleted(reminder)">
-            <ion-icon 
-              [name]="reminder.status === 'completed' ? 'checkmark-circle' : 'checkmark-circle-outline'" 
-              slot="icon-only"
-              [color]="reminder.status === 'completed' ? 'success' : 'medium'">
-            </ion-icon>
-          </ion-button>
-        </ion-item>
-      </div>
-
-      <!-- Estado vazio -->
-      <div *ngIf="lembretes.length === 0 && integratedReminders.length === 0" class="ion-text-center ion-padding">
-        <ion-icon name="notifications-outline" size="large" color="medium"></ion-icon>
-        <p>Nenhum lembrete ou compromisso próximo</p>
-        <p><small>Seus lembretes e consultas aparecerão aqui</small></p>
-      </div>
-    </ion-list>
-    
-    <h2>Acesso rápido</h2>
+    <h2 class="elderly-text-xl elderly-text-bold">Acesso rápido</h2>
     <ion-grid>
       <ion-row>
         <ion-col size="6">
-          <ion-card routerLink="/meus-medicamentos" class="menu-card">
+          <ion-card routerLink="/meus-medicamentos" class="menu-card elderly-animate-fadeIn elderly-animate-delay-3 elderly-accessible">
             <ion-card-content class="ion-text-center">
-              <ion-icon name="medicine-outline"></ion-icon>
+              <ion-icon name="medical-outline"></ion-icon>
               <p>Meus Medicamentos</p>
             </ion-card-content>
           </ion-card>
         </ion-col>
         <ion-col size="6">
-          <ion-card class="menu-card" routerLink="/my-consultations">
+          <ion-card class="menu-card elderly-animate-fadeIn elderly-animate-delay-4 elderly-accessible" routerLink="/my-consultations">
             <ion-card-content class="ion-text-center">
               <ion-icon name="calendar-outline"></ion-icon>
               <p>Consultas</p>

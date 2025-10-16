@@ -1,0 +1,465 @@
+/* =========================================
+   LIFEINCARE - SISTEMA DE DESIGN PARA IDOSOS
+   ========================================= */
+
+/* Variáveis de Design Específicas para Idosos */
+:root {
+  /* === CORES PRINCIPAIS === */
+  --elderly-primary: #4a90e2;
+  --elderly-primary-light: #6ba3e8;
+  --elderly-primary-dark: #3a7bc8;
+  --elderly-secondary: #7ed321;
+  --elderly-secondary-light: #95e03f;
+  --elderly-secondary-dark: #6bb81c;
+  
+  /* === CORES DE FUNDO === */
+  --elderly-bg-primary: #f8f9fa;
+  --elderly-bg-secondary: #ffffff;
+  --elderly-bg-card: rgba(255, 255, 255, 0.98);
+  --elderly-bg-overlay: rgba(0, 0, 0, 0.6);
+  
+  /* === CORES DE TEXTO === */
+  --elderly-text-primary: #2c3e50;
+  --elderly-text-secondary: #5a6c7d;
+  --elderly-text-light: #8492a6;
+  --elderly-text-white: #ffffff;
+  
+  /* === CORES DE STATUS === */
+  --elderly-success: #28a745;
+  --elderly-warning: #ffc107;
+  --elderly-danger: #dc3545;
+  --elderly-info: #17a2b8;
+  
+  /* === CORES PARA PRÓXIMA DOSE === */
+  --elderly-next-dose-normal: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  --elderly-next-dose-urgent: linear-gradient(135deg, #ff4757, #ff3742);
+  --elderly-next-dose-overdue: linear-gradient(135deg, #c44569, #f8b500);
+  
+  /* === TIPOGRAFIA === */
+  --elderly-font-size-xs: 0.875rem;    /* 14px */
+  --elderly-font-size-sm: 1rem;        /* 16px */
+  --elderly-font-size-md: 1.125rem;    /* 18px */
+  --elderly-font-size-lg: 1.25rem;     /* 20px */
+  --elderly-font-size-xl: 1.5rem;      /* 24px */
+  --elderly-font-size-xxl: 2rem;       /* 32px */
+  
+  --elderly-font-weight-normal: 400;
+  --elderly-font-weight-medium: 500;
+  --elderly-font-weight-semibold: 600;
+  --elderly-font-weight-bold: 700;
+  
+  --elderly-line-height-tight: 1.2;
+  --elderly-line-height-normal: 1.5;
+  --elderly-line-height-relaxed: 1.75;
+  
+  /* === ESPAÇAMENTOS === */
+  --elderly-spacing-xs: 0.25rem;   /* 4px */
+  --elderly-spacing-sm: 0.5rem;    /* 8px */
+  --elderly-spacing-md: 1rem;      /* 16px */
+  --elderly-spacing-lg: 1.5rem;    /* 24px */
+  --elderly-spacing-xl: 2rem;      /* 32px */
+  --elderly-spacing-xxl: 3rem;     /* 48px */
+  
+  /* === BORDAS E RAIOS === */
+  --elderly-border-radius-sm: 8px;
+  --elderly-border-radius-md: 12px;
+  --elderly-border-radius-lg: 16px;
+  --elderly-border-radius-xl: 24px;
+  
+  --elderly-border-width: 1px;
+  --elderly-border-color: #e9ecef;
+  --elderly-border-color-light: #f1f3f4;
+  
+  /* === SOMBRAS === */
+  --elderly-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --elderly-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --elderly-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --elderly-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.25);
+  
+  /* === TRANSIÇÕES === */
+  --elderly-transition-fast: 0.15s ease-out;
+  --elderly-transition-normal: 0.3s ease-out;
+  --elderly-transition-slow: 0.5s ease-out;
+  
+  /* === BREAKPOINTS === */
+  --elderly-breakpoint-sm: 576px;
+  --elderly-breakpoint-md: 768px;
+  --elderly-breakpoint-lg: 992px;
+  --elderly-breakpoint-xl: 1200px;
+}
+
+/* =========================================
+   CLASSES UTILITÁRIAS PARA IDOSOS
+   ========================================= */
+
+/* === TIPOGRAFIA === */
+.elderly-text {
+  &-xs { font-size: var(--elderly-font-size-xs); }
+  &-sm { font-size: var(--elderly-font-size-sm); }
+  &-md { font-size: var(--elderly-font-size-md); }
+  &-lg { font-size: var(--elderly-font-size-lg); }
+  &-xl { font-size: var(--elderly-font-size-xl); }
+  &-xxl { font-size: var(--elderly-font-size-xxl); }
+  
+  &-normal { font-weight: var(--elderly-font-weight-normal); }
+  &-medium { font-weight: var(--elderly-font-weight-medium); }
+  &-semibold { font-weight: var(--elderly-font-weight-semibold); }
+  &-bold { font-weight: var(--elderly-font-weight-bold); }
+  
+  &-primary { color: var(--elderly-text-primary); }
+  &-secondary { color: var(--elderly-text-secondary); }
+  &-light { color: var(--elderly-text-light); }
+  &-white { color: var(--elderly-text-white); }
+}
+
+/* === CARDS MELHORADOS === */
+.elderly-card {
+  background: var(--elderly-bg-card);
+  border-radius: var(--elderly-border-radius-lg);
+  box-shadow: var(--elderly-shadow-md);
+  border: var(--elderly-border-width) solid var(--elderly-border-color);
+  transition: all var(--elderly-transition-normal);
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--elderly-shadow-lg);
+  }
+  
+  &-header {
+    padding: var(--elderly-spacing-lg);
+    border-bottom: var(--elderly-border-width) solid var(--elderly-border-color-light);
+    background: linear-gradient(135deg, var(--elderly-primary), var(--elderly-primary-light));
+    color: var(--elderly-text-white);
+    
+    .title {
+      font-size: var(--elderly-font-size-lg);
+      font-weight: var(--elderly-font-weight-semibold);
+      margin: 0;
+    }
+    
+    .subtitle {
+      font-size: var(--elderly-font-size-sm);
+      opacity: 0.9;
+      margin: var(--elderly-spacing-xs) 0 0 0;
+    }
+  }
+  
+  &-content {
+    padding: var(--elderly-spacing-lg);
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: var(--elderly-spacing-md);
+      font-size: var(--elderly-font-size-md);
+      
+      .label {
+        font-weight: var(--elderly-font-weight-medium);
+        color: var(--elderly-text-secondary);
+        margin-right: var(--elderly-spacing-sm);
+      }
+      
+      .value {
+        color: var(--elderly-text-primary);
+      }
+    }
+  }
+  
+  &-actions {
+    padding: var(--elderly-spacing-md) var(--elderly-spacing-lg);
+    background: var(--elderly-bg-primary);
+    border-top: var(--elderly-border-width) solid var(--elderly-border-color-light);
+    
+    .btn {
+      margin-right: var(--elderly-spacing-sm);
+      margin-bottom: var(--elderly-spacing-sm);
+    }
+  }
+}
+
+/* === BOTÕES MELHORADOS === */
+.elderly-btn {
+  border-radius: var(--elderly-border-radius-md);
+  font-weight: var(--elderly-font-weight-medium);
+  font-size: var(--elderly-font-size-md);
+  padding: var(--elderly-spacing-md) var(--elderly-spacing-lg);
+  transition: all var(--elderly-transition-normal);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px; /* Melhor para toque */
+  
+  ion-icon {
+    margin-right: var(--elderly-spacing-sm);
+    font-size: 1.2em;
+  }
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--elderly-shadow-md);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &-primary {
+    background: linear-gradient(135deg, var(--elderly-primary), var(--elderly-primary-light));
+    color: var(--elderly-text-white);
+    
+    &:hover {
+      background: linear-gradient(135deg, var(--elderly-primary-dark), var(--elderly-primary));
+    }
+  }
+  
+  &-secondary {
+    background: var(--elderly-bg-secondary);
+    color: var(--elderly-primary);
+    border: 2px solid var(--elderly-primary);
+    
+    &:hover {
+      background: var(--elderly-primary);
+      color: var(--elderly-text-white);
+    }
+  }
+  
+  &-success {
+    background: linear-gradient(135deg, var(--elderly-success), #34ce57);
+    color: var(--elderly-text-white);
+  }
+  
+  &-warning {
+    background: linear-gradient(135deg, var(--elderly-warning), #ffcd39);
+    color: var(--elderly-text-primary);
+  }
+  
+  &-danger {
+    background: linear-gradient(135deg, var(--elderly-danger), #e55370);
+    color: var(--elderly-text-white);
+  }
+}
+
+/* === ANIMAÇÕES === */
+@keyframes elderly-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes elderly-slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes elderly-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.elderly-animate {
+  &-fadeIn {
+    animation: elderly-fadeIn var(--elderly-transition-slow) ease-out forwards;
+  }
+  
+  &-slideIn {
+    animation: elderly-slideIn var(--elderly-transition-slow) ease-out forwards;
+  }
+  
+  &-pulse {
+    animation: elderly-pulse 2s ease-in-out infinite;
+  }
+  
+  &-delay-1 { animation-delay: 0.1s; }
+  &-delay-2 { animation-delay: 0.2s; }
+  &-delay-3 { animation-delay: 0.3s; }
+  &-delay-4 { animation-delay: 0.4s; }
+}
+
+/* === ACESSIBILIDADE === */
+.elderly-accessible {
+  /* Foco melhorado para navegação por teclado */
+  &:focus {
+    outline: 3px solid var(--elderly-primary);
+    outline-offset: 2px;
+  }
+  
+  /* Texto maior para melhor legibilidade */
+  &-large-text {
+    font-size: var(--elderly-font-size-lg);
+    line-height: var(--elderly-line-height-relaxed);
+  }
+  
+  /* Alto contraste */
+  &-high-contrast {
+    background: var(--elderly-text-primary);
+    color: var(--elderly-text-white);
+  }
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+  :root {
+    --elderly-font-size-xs: 1rem;        /* 16px */
+    --elderly-font-size-sm: 1.125rem;    /* 18px */
+    --elderly-font-size-md: 1.25rem;     /* 20px */
+    --elderly-font-size-lg: 1.375rem;    /* 22px */
+    --elderly-font-size-xl: 1.625rem;    /* 26px */
+    --elderly-font-size-xxl: 2.25rem;    /* 36px */
+  }
+  
+  .elderly-card {
+    margin: var(--elderly-spacing-sm);
+    
+    &-content {
+      padding: var(--elderly-spacing-md);
+    }
+  }
+  
+  .elderly-btn {
+    width: 100%;
+    margin-bottom: var(--elderly-spacing-sm);
+  }
+}
+
+/* === ESTADOS DE LOADING === */
+.elderly-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--elderly-spacing-xxl);
+  
+  ion-spinner {
+    margin-bottom: var(--elderly-spacing-md);
+  }
+  
+  p {
+    font-size: var(--elderly-font-size-md);
+    color: var(--elderly-text-secondary);
+    text-align: center;
+  }
+}
+
+/* === ESTADOS VAZIOS === */
+.elderly-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--elderly-spacing-xxl);
+  text-align: center;
+  
+  ion-icon {
+    font-size: 4rem;
+    color: var(--elderly-text-light);
+    margin-bottom: var(--elderly-spacing-lg);
+  }
+  
+  h2 {
+    font-size: var(--elderly-font-size-xl);
+    font-weight: var(--elderly-font-weight-semibold);
+    color: var(--elderly-text-primary);
+    margin-bottom: var(--elderly-spacing-md);
+  }
+  
+  p {
+    font-size: var(--elderly-font-size-md);
+    color: var(--elderly-text-secondary);
+    margin-bottom: var(--elderly-spacing-lg);
+    max-width: 300px;
+  }
+}
+
+/* === PRÓXIMA DOSE - VARIAÇÕES POR URGÊNCIA === */
+.elderly-next-dose {
+  &-normal {
+    background: var(--elderly-next-dose-normal);
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: var(--elderly-next-dose-normal);
+      border-radius: var(--elderly-border-radius-lg);
+      z-index: -1;
+      opacity: 0.3;
+      animation: elderly-pulse 3s ease-in-out infinite;
+    }
+  }
+  
+  &-urgent {
+    background: var(--elderly-next-dose-urgent);
+    animation: elderly-pulse 1.5s ease-in-out infinite;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: var(--elderly-next-dose-urgent);
+      border-radius: var(--elderly-border-radius-lg);
+      z-index: -1;
+      opacity: 0.5;
+      animation: elderly-pulse 1s ease-in-out infinite;
+    }
+    
+    h3::before {
+      content: '🚨';
+      animation: elderly-pulse 1s ease-in-out infinite;
+    }
+  }
+  
+  &-overdue {
+    background: var(--elderly-next-dose-overdue);
+    animation: elderly-pulse 1s ease-in-out infinite;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      background: var(--elderly-next-dose-overdue);
+      border-radius: var(--elderly-border-radius-lg);
+      z-index: -1;
+      opacity: 0.7;
+      animation: elderly-pulse 0.8s ease-in-out infinite;
+    }
+    
+    h3::before {
+      content: '⚠️';
+      animation: elderly-pulse 0.5s ease-in-out infinite;
+    }
+    
+    h3::after {
+      content: ' - ATRASADA!';
+      color: #fff3cd;
+      font-weight: var(--elderly-font-weight-bold);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+  }
+}

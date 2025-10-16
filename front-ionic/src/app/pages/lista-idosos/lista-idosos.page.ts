@@ -198,6 +198,11 @@ export class ListaIdososPage implements OnInit {
     });
   }
 
+  novaConsulta(elderlyId: string) {
+    this.router.navigate(['/consultation-form'], { 
+      queryParams: { elderlyId: elderlyId } 
+    });
+  }
 
   cadastrarNovoIdoso() {
     this.router.navigate(['/cadastro-idoso']);
