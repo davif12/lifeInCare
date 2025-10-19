@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, LoadingController, AlertController } from '@ionic/angular';
 import { ConsultationService, ConsultationType, ConsultationStatus } from '../../services/consultation.service';
+import { ReminderService, ReminderType, ReminderFrequency } from '../../services/reminder.service';
 import { addIcons } from 'ionicons';
 import { informationCircleOutline } from 'ionicons/icons';
 
@@ -43,6 +44,7 @@ export class ConsultationFormPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private consultationService: ConsultationService,
+    private reminderService: ReminderService,
     private loadingController: LoadingController,
     private alertController: AlertController
   ) {
@@ -141,6 +143,22 @@ export class ConsultationFormPage implements OnInit {
     if (this.isEditMode) {
       // Modo edição: enviar todos os campos
       formData = { ...this.form.value };
+      
+      // Garantir formato correto para nextAppointment
+      if (formData.nextAppointment) {
+        // Se for apenas uma data (YYYY-MM-DD), manter assim
+        // Se for datetime completo, converter para ISO
+        const nextDate = new Date(formData.nextAppointment);
+        if (!isNaN(nextDate.getTime())) {
+          // Se é uma data válida, usar formato ISO apenas se necessário
+          if (formData.nextAppointment.includes('T')) {
+            formData.nextAppointment = nextDate.toISOString();
+          } else {
+            // Manter formato de data simples (YYYY-MM-DD)
+            formData.nextAppointment = formData.nextAppointment.split('T')[0];
+          }
+        }
+      }
     } else {
       // Modo criação: enviar apenas campos permitidos pelo CreateConsultationDto
       formData = {
@@ -155,18 +173,37 @@ export class ConsultationFormPage implements OnInit {
       };
     }
 
-    console.log('ConsultationForm - Dados a serem enviados:', formData);
+    // Capturar dados do lembrete antes de remover
+    const reminderData = {
+      enableReminder: formData.enableReminder,
+      reminderTime: formData.reminderTime
+    };
 
     // Remover campos de UI que não vão para o backend
     delete formData.enableReminder;
     delete formData.reminderTime;
+
+    // Remover campos vazios ou null para evitar problemas de validação
+    Object.keys(formData).forEach(key => {
+      if (formData[key] === null || formData[key] === '') {
+        delete formData[key];
+      }
+    });
+
+    console.log('ConsultationForm - Dados a serem enviados:', formData);
+    console.log('ConsultationForm - Dados do lembrete:', reminderData);
 
     const action = this.isEditMode
       ? this.consultationService.updateConsultation(this.consultationId!, formData)
       : this.consultationService.createConsultation(formData);
 
     action.subscribe({
-      next: () => {
+      next: (response) => {
+        // Se lembrete está habilitado e não é modo edição, criar lembrete
+        if (reminderData.enableReminder && !this.isEditMode) {
+          this.createConsultationReminder(response.consultation, reminderData.reminderTime);
+        }
+        
         this.isSubmitting = false;
         this.presentSuccessAlert();
         this.goBack();
@@ -287,5 +324,41 @@ export class ConsultationFormPage implements OnInit {
   // Obter nome do idoso (não mais necessário, mas mantido para compatibilidade)
   getSelectedElderlyName(): string {
     return '';
+  }
+
+  // Criar lembrete para a consulta
+  async createConsultationReminder(consultation: any, reminderMinutes: number) {
+    try {
+      console.log('Criando lembrete para consulta:', consultation);
+      
+      const consultationDate = new Date(consultation.scheduledDateTime);
+      const reminderDate = new Date(consultationDate.getTime() - (reminderMinutes * 60 * 1000));
+      
+      const reminderData = {
+        title: `Lembrete: Consulta de ${consultation.specialty}`,
+        description: `Consulta com Dr. ${consultation.doctorName} em ${consultation.location}. Motivo: ${consultation.reason}`,
+        type: ReminderType.APPOINTMENT,
+        reminderDateTime: reminderDate.toISOString(),
+        frequency: ReminderFrequency.ONCE,
+        priority: 4, // Alta prioridade para consultas
+        sendNotification: true,
+        notificationMinutesBefore: 5, // Notificação 5 min antes do lembrete
+        patientId: consultation.elderlyUserId,
+        notes: `Lembrete automático criado ${reminderMinutes} minutos antes da consulta`
+      };
+
+      this.reminderService.createReminder(reminderData).subscribe({
+        next: (response) => {
+          console.log('Lembrete criado com sucesso:', response);
+        },
+        error: (error) => {
+          console.error('Erro ao criar lembrete:', error);
+          // Não mostrar erro para o usuário, pois a consulta já foi salva
+        }
+      });
+      
+    } catch (error) {
+      console.error('Erro ao processar lembrete:', error);
+    }
   }
 }

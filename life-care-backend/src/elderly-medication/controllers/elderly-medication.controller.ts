@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Post,
+  Param,
   UseGuards,
   Request,
   Logger,
@@ -264,5 +266,39 @@ export class ElderlyMedicationController {
 
     this.logger.log('Dashboard gerado com sucesso');
     return dashboard;
+  }
+
+  @Post(':id/taken')
+  @ApiOperation({ 
+    summary: 'Marcar medicamento como tomado',
+    description: 'Permite ao idoso marcar um medicamento como tomado'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Medicamento marcado como tomado com sucesso.',
+  })
+  @ApiResponse({ status: 401, description: 'Não autorizado.' })
+  @ApiResponse({ status: 404, description: 'Medicamento não encontrado.' })
+  @ApiResponse({ status: 403, description: 'Medicamento inativo ou não pertence ao idoso.' })
+  async markMedicationAsTaken(
+    @Param('id') medicationId: string,
+    @Request() req
+  ): Promise<{
+    success: boolean;
+    message: string;
+    takenAt: Date;
+    medication: {
+      id: string;
+      name: string;
+      dosage: string;
+    };
+  }> {
+    this.logger.log('=== IDOSO MARCANDO MEDICAMENTO COMO TOMADO ===');
+    
+    const elderlyUserId = req.user.sub || req.user.userId;
+    this.logger.log(`Idoso UserId: ${elderlyUserId}`);
+    this.logger.log(`Medicamento ID: ${medicationId}`);
+
+    return this.elderlyMedicationService.markMedicationAsTaken(medicationId, elderlyUserId);
   }
 }

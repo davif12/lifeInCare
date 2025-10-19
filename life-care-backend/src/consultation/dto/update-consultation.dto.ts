@@ -1,8 +1,9 @@
 import { PartialType } from '@nestjs/swagger';
 import { CreateConsultationDto } from './create-consultation.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsEnum, IsString, IsDateString } from 'class-validator';
+import { IsOptional, IsEnum, IsString } from 'class-validator';
 import { ConsultationStatus } from '../consultation.entity';
+import { IsFlexibleDate } from '../validators/flexible-date.validator';
 
 export class UpdateConsultationDto extends PartialType(CreateConsultationDto) {
   @ApiProperty({ description: 'Status da consulta', enum: ConsultationStatus, required: false })
@@ -20,8 +21,12 @@ export class UpdateConsultationDto extends PartialType(CreateConsultationDto) {
   @IsString()
   prescriptions?: string;
 
-  @ApiProperty({ description: 'Próxima consulta recomendada', required: false })
+  @ApiProperty({ 
+    description: 'Próxima consulta recomendada (formato: YYYY-MM-DD ou ISO 8601)', 
+    required: false,
+    example: '2024-12-25'
+  })
   @IsOptional()
-  @IsDateString()
+  @IsFlexibleDate({ message: 'nextAppointment deve ser uma data válida no formato YYYY-MM-DD ou ISO 8601' })
   nextAppointment?: string;
 }

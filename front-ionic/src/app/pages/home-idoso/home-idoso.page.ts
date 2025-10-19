@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { IonicModule, LoadingController, AlertController, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { 
   medkitOutline, 
@@ -22,7 +23,6 @@ import {
 import { ElderlyService } from '../../services/elderly.service';
 import { ElderlyMedicationService, TodaySchedule, MedicationSummary } from '../../services/elderly-medication.service';
 import { IntegratedReminderService, IntegratedReminder } from '../../services/integrated-reminder.service';
-import { firstValueFrom } from 'rxjs';
 
 // Interface para itens da timeline unificada
 export interface TimelineItem {
@@ -67,6 +67,9 @@ export class HomeIdosoPage implements OnInit {
   private _timelineCache: TimelineItem[] = [];
   private _cacheValid = false;
   
+  // Controle de medicamentos tomados hoje (consistência com meus-medicamentos)
+  medicationsTakenToday: Set<string> = new Set();
+  
   // Getter para timeline (usado no template)
   get timelineItems(): TimelineItem[] {
     if (!this._cacheValid) {
@@ -105,6 +108,7 @@ export class HomeIdosoPage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadMedicationsTakenToday(); // Carregar medicamentos tomados hoje
     this.loadElderlyData();
     this.loadMedicationData();
     // loadIntegratedReminders será chamado após loadElderlyData
@@ -161,11 +165,14 @@ export class HomeIdosoPage implements OnInit {
 
       // Converter horários de medicamentos em lembretes
       this.lembretes = this.todaySchedule.map(schedule => ({
+        id: schedule.medicationId, // ✅ ID VÁLIDO DO MEDICAMENTO
         titulo: `${schedule.medicationName} - ${schedule.dosage}`,
         horario: schedule.time,
         concluido: false,
         tipo: 'medicamento',
-        instructions: schedule.instructions
+        instructions: schedule.instructions,
+        medicationName: schedule.medicationName,
+        dosage: schedule.dosage
       }));
       
       this.invalidateTimelineCache(); // Invalidar cache quando dados mudarem
@@ -217,18 +224,27 @@ export class HomeIdosoPage implements OnInit {
     event.target.complete();
   }
 
-  // Adicionar método para marcar medicamentos (lista antiga)
+  // Método para marcar medicamentos como tomados (consistente com meus-medicamentos)
   async markMedicationAsCompleted(medication: any) {
-    // Adiciona a propriedade para iniciar a animação
-    medication.completing = true;
-
-    // Aguarda a animação antes de remover da lista
-    setTimeout(() => {
-      this.lembretes = this.lembretes.filter(item => item !== medication);
-      this.presentToast(`"${medication.titulo}" concluído!`, 'success');
-    }, 500); // Tempo da animação
-
-    // TODO: Implementar a chamada de API para marcar o medicamento como concluído no backend
+    try {
+      console.log('HOME-IDOSO: Marcando medicamento como tomado:', medication);
+      
+      // Chamar o backend para validar
+      await firstValueFrom(this.elderlyMedicationService.markAsTaken(medication.id));
+      
+      // Salvar como tomado hoje (localStorage + Set local)
+      this.saveMedicationAsTakenToday(medication.id);
+      
+      // Invalidar cache da timeline para forçar atualização
+      this.invalidateTimelineCache();
+      
+      // Toast de sucesso
+      this.presentToast(`"${medication.titulo}" marcado como tomado!`, 'success');
+      
+    } catch (error) {
+      console.error('Erro ao marcar medicamento como tomado:', error);
+      this.presentToast('Erro ao marcar medicamento como tomado', 'danger');
+    }
   }
 
   // Método para marcar lembretes integrados como concluídos
@@ -237,19 +253,24 @@ export class HomeIdosoPage implements OnInit {
 
     const originalReminders = [...this.integratedReminders];
     
-    // Animação e remoção otimista
-    reminder.completing = true;
-    setTimeout(() => {
-      this.integratedReminders = this.integratedReminders.filter(item => item.id !== reminder.id);
-    }, 500);
-
     try {
       await firstValueFrom(this.integratedReminderService.markAsCompleted(reminder));
+      
+      // Atualizar status do lembrete localmente
+      const reminderIndex = this.integratedReminders.findIndex(r => r.id === reminder.id);
+      if (reminderIndex !== -1) {
+        this.integratedReminders[reminderIndex].status = 'completed';
+      }
+      
+      // Invalidar cache da timeline para forçar reconstrução
+      this.invalidateTimelineCache();
+      
       this.presentToast(`"${reminder.title}" concluído!`, 'success');
     } catch (error) {
       console.error('Erro ao marcar como concluído, revertendo:', error);
       // Reverte a UI em caso de erro
       this.integratedReminders = originalReminders;
+      this.invalidateTimelineCache();
       this.presentToast('Falha ao concluir. Tente novamente.', 'danger');
     }
   }
@@ -331,7 +352,8 @@ export class HomeIdosoPage implements OnInit {
 
     // Adicionar medicamentos de hoje (exceto a próxima dose que já está em destaque)
     this.lembretes.forEach(lembrete => {
-      if (!this.isNextDose(lembrete)) {
+      // Filtrar medicamentos já tomados hoje e que não são a próxima dose
+      if (!this.isNextDose(lembrete) && !this.isMedicationTakenToday(lembrete.id)) {
         timelineItems.push({
           id: `med-${lembrete.id}`,
           type: 'medication',
@@ -346,17 +368,20 @@ export class HomeIdosoPage implements OnInit {
       }
     });
 
-    // Adicionar lembretes e consultas integrados (apenas de hoje)
+    // Adicionar lembretes e consultas integrados (apenas de hoje e não concluídos)
     this.integratedReminders.forEach(reminder => {
       const reminderDate = new Date(reminder.nextOccurrence);
-      if (reminderDate.toDateString() === today) {
+      const isToday = reminderDate.toDateString() === today;
+      const isNotCompleted = reminder.status !== 'completed';
+      
+      if (isToday && isNotCompleted) {
         timelineItems.push({
           id: `reminder-${reminder.id}`,
           type: reminder.type as 'medication' | 'consultation' | 'reminder',
           title: reminder.title,
           description: reminder.description,
           time: this.formatTime(reminderDate),
-          completed: reminder.status === 'completed',
+          completed: false, // Sempre false pois filtramos os concluídos
           actionable: reminder.actionable,
           urgency: this.calculateUrgency(this.formatTime(reminderDate)),
           originalItem: reminder
@@ -462,6 +487,46 @@ export class HomeIdosoPage implements OnInit {
     } else {
       await this.markAsCompleted(item.originalItem);
     }
+    
+    // Garantir que a timeline seja atualizada
+    this.invalidateTimelineCache();
+  }
+
+  /**
+   * Carregar medicamentos tomados hoje do localStorage
+   */
+  loadMedicationsTakenToday() {
+    const today = new Date().toDateString();
+    const takenTodayKey = `medications_taken_${today}`;
+    const takenToday = JSON.parse(localStorage.getItem(takenTodayKey) || '[]');
+    this.medicationsTakenToday = new Set(takenToday);
+    console.log('HOME-IDOSO: Medicamentos tomados hoje carregados:', Array.from(this.medicationsTakenToday));
+  }
+
+  /**
+   * Verificar se medicamento foi tomado hoje
+   */
+  isMedicationTakenToday(medicationId: string): boolean {
+    return this.medicationsTakenToday.has(medicationId);
+  }
+
+  /**
+   * Salvar medicamento como tomado hoje
+   */
+  saveMedicationAsTakenToday(medicationId: string) {
+    // Adicionar ao conjunto local
+    this.medicationsTakenToday.add(medicationId);
+    
+    // Salvar no localStorage
+    const today = new Date().toDateString();
+    const takenTodayKey = `medications_taken_${today}`;
+    const currentTaken = JSON.parse(localStorage.getItem(takenTodayKey) || '[]');
+    if (!currentTaken.includes(medicationId)) {
+      currentTaken.push(medicationId);
+      localStorage.setItem(takenTodayKey, JSON.stringify(currentTaken));
+    }
+    
+    console.log('HOME-IDOSO: Medicamento salvo como tomado:', medicationId);
   }
 
   sair() {

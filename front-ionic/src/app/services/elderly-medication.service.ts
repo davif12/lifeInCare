@@ -39,6 +39,7 @@ export interface MedicationSummary {
 }
 
 export interface TodaySchedule {
+  medicationId: string;
   medicationName: string;
   dosage: string;
   time: string;
