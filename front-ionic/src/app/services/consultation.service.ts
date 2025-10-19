@@ -146,13 +146,25 @@ export class ConsultationService {
       );
   }
 
-  // Atualizar status da consulta
+  // Atualizar status da consulta (para cuidador)
   updateConsultationStatus(id: string, status: ConsultationStatus): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/consultations/${id}/status/${status}`, {})
       .pipe(
         tap(response => console.log('Status da consulta atualizado:', response)),
         catchError(error => {
           console.error('Erro ao atualizar status da consulta:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  // Atualizar status da consulta (para idoso)
+  updateConsultationStatusByElderly(id: string, status: ConsultationStatus): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/elderly/consultations/${id}/status/${status}`, {})
+      .pipe(
+        tap(response => console.log('Status da consulta atualizado pelo idoso:', response)),
+        catchError(error => {
+          console.error('Erro ao atualizar status da consulta pelo idoso:', error);
           return throwError(() => error);
         })
       );

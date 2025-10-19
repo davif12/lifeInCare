@@ -121,8 +121,8 @@ export class IntegratedReminderService {
    * Marcar consulta como concluída
    */
   markConsultationAsCompleted(consultationId: string): Observable<any> {
-    // Usar o método correto do ConsultationService
-    return this.consultationService.updateConsultationStatus(consultationId, ConsultationStatus.COMPLETED);
+    // Usar o método específico para idoso
+    return this.consultationService.updateConsultationStatusByElderly(consultationId, ConsultationStatus.COMPLETED);
   }
 
   /**

@@ -1,8 +1,11 @@
 import {
   Controller,
   Get,
+  Patch,
+  Param,
   UseGuards,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -11,6 +14,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { ConsultationService } from '../consultation.service';
+import { ConsultationStatus } from '../consultation.entity';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @ApiTags('elderly-consultations')
@@ -64,6 +68,37 @@ export class ElderlyConsultationController {
         consultations: allConsultations,
         upcomingConsultations,
       },
+    };
+  }
+
+  @Patch(':id/status/:status')
+  @ApiOperation({ summary: 'Atualizar status de uma consulta (apenas para o idoso)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Status da consulta atualizado com sucesso.',
+  })
+  @ApiResponse({ status: 404, description: 'Consulta não encontrada.' })
+  @ApiResponse({ status: 403, description: 'Acesso negado.' })
+  async updateStatus(
+    @Param('id') id: string,
+    @Param('status') status: ConsultationStatus,
+    @Request() req,
+  ) {
+    const elderlyUserId = req.user.sub || req.user.userId;
+    
+    // Buscar a consulta para verificar se pertence ao idoso
+    const consultation = await this.consultationService.findAllByElderlyUser(elderlyUserId);
+    const targetConsultation = consultation.find(c => c.id === id);
+    
+    if (!targetConsultation) {
+      throw new NotFoundException(`Consulta com ID ${id} não encontrada`);
+    }
+    
+    // Atualizar status usando o método do service
+    await this.consultationService.updateStatusByElderly(id, status);
+    
+    return {
+      message: `Status da consulta alterado para ${status} com sucesso`,
     };
   }
 }

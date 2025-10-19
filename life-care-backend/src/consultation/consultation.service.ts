@@ -144,4 +144,24 @@ export class ConsultationService {
     return consultations;
   }
 
+  /**
+   * Atualizar status de consulta pelo idoso (sem verificar caregiverUserId)
+   */
+  async updateStatusByElderly(id: string, status: ConsultationStatus) {
+    const consultation = await this.consultationRepository.findOne({
+      where: { id },
+      relations: ['elderlyUser', 'caregiverUser'],
+    });
+
+    if (!consultation) {
+      throw new NotFoundException(`Consulta com ID ${id} não encontrada`);
+    }
+    
+    await this.consultationRepository.update(id, { status });
+
+    return {
+      message: `Status da consulta alterado para ${status} com sucesso`,
+    };
+  }
+
 }

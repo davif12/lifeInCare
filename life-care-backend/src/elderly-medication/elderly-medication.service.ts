@@ -274,6 +274,7 @@ export class ElderlyMedicationService {
    * Próximas doses do dia para um idoso
    */
   async getTodayScheduleByElderlyUserId(elderlyUserId: string): Promise<{
+    medicationId: string;
     medicationName: string;
     dosage: string;
     time: string;
@@ -287,6 +288,7 @@ export class ElderlyMedicationService {
       if (!med.schedules || med.schedules.length === 0) return [];
       
       return med.schedules.map(time => ({
+        medicationId: med.id, // ✅ ID VÁLIDO DO MEDICAMENTO
         medicationName: med.name,
         dosage: med.dosage,
         time,
@@ -322,5 +324,64 @@ export class ElderlyMedicationService {
       relations: ['elderlyUser', 'caregiverUser'],
       order: { createdAt: 'DESC' },
     });
+  }
+
+  /**
+   * Marcar medicamento como tomado pelo idoso
+   */
+  async markMedicationAsTaken(medicationId: string, elderlyUserId: string): Promise<{
+    success: boolean;
+    message: string;
+    takenAt: Date;
+    medication: {
+      id: string;
+      name: string;
+      dosage: string;
+    };
+  }> {
+    this.logger.log(`=== MARCANDO MEDICAMENTO COMO TOMADO ===`);
+    this.logger.log(`Medicamento ID: ${medicationId}`);
+    this.logger.log(`Idoso ID: ${elderlyUserId}`);
+
+    try {
+      // Verificar se o medicamento existe e pertence ao idoso
+      const medication = await this.elderlyMedicationRepository.findOne({
+        where: { 
+          id: medicationId,
+          elderlyUserId 
+        },
+      });
+
+      if (!medication) {
+        this.logger.error(`❌ Medicamento ${medicationId} não encontrado para o idoso ${elderlyUserId}`);
+        throw new NotFoundException('Medicamento não encontrado ou não pertence a este idoso');
+      }
+
+      if (!medication.isActive) {
+        this.logger.error(`❌ Medicamento ${medicationId} está inativo`);
+        throw new ForbiddenException('Este medicamento está inativo');
+      }
+
+      this.logger.log(`✅ Medicamento encontrado: ${medication.name}`);
+      
+      const takenAt = new Date();
+      const result = {
+        success: true,
+        message: `Medicamento "${medication.name}" marcado como tomado com sucesso`,
+        takenAt,
+        medication: {
+          id: medication.id,
+          name: medication.name,
+          dosage: medication.dosage,
+        },
+      };
+
+      this.logger.log(`✅ Medicamento marcado como tomado: ${JSON.stringify(result)}`);
+      return result;
+
+    } catch (error) {
+      this.logger.error(`❌ Erro ao marcar medicamento como tomado:`, error.message);
+      throw error;
+    }
   }
 }

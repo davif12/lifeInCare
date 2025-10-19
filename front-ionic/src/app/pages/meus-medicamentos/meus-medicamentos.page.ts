@@ -29,6 +29,7 @@ import {
 export class MeusMedicamentosPage implements OnInit {
   medications: ElderlyMedication[] = [];
   loading = false;
+  medicationsTakenToday: Set<string> = new Set(); // IDs dos medicamentos tomados hoje
 
   constructor(
     private elderlyMedicationService: ElderlyMedicationService,
@@ -252,8 +253,21 @@ export class MeusMedicamentosPage implements OnInit {
           handler: async () => {
             try {
               await firstValueFrom(this.elderlyMedicationService.markAsTaken(medication.id));
+              
+              // Adicionar ao conjunto de medicamentos tomados hoje
+              this.medicationsTakenToday.add(medication.id);
+              
+              // Salvar no localStorage para persistir durante a sessão
+              const today = new Date().toDateString();
+              const takenTodayKey = `medications_taken_${today}`;
+              const currentTaken = JSON.parse(localStorage.getItem(takenTodayKey) || '[]');
+              if (!currentTaken.includes(medication.id)) {
+                currentTaken.push(medication.id);
+                localStorage.setItem(takenTodayKey, JSON.stringify(currentTaken));
+              }
+              
               await this.showToast('Medicamento marcado como tomado!', 'success');
-              await this.loadMyMedications(); // Recarregar lista
+              // Não recarregar a lista, apenas atualizar a visualização
             } catch (error) {
               console.error('Erro ao marcar medicamento como tomado:', error);
               await this.showToast('Erro ao marcar medicamento como tomado', 'danger');
